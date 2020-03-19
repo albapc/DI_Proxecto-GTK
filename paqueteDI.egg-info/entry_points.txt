@@ -1,0 +1,3 @@
+[console_scripts]
+miProyecto = paqueteDI.PDI_menuPrincipal:main
+

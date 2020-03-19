@@ -1,0 +1,650 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="es">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Estrutura da aplicación &#8212; documentación de ProxectoDI - 0.0.1</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/translations.js"></script>
+    <link rel="index" title="Índice" href="genindex.html" />
+    <link rel="search" title="Búsqueda" href="search.html" />
+    <link rel="prev" title="Benvido/a á documentación de ProxectoDI!" href="index.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="estrutura-da-aplicacion">
+<h1>Estrutura da aplicación<a class="headerlink" href="#estrutura-da-aplicacion" title="Enlazar permanentemente con este título">¶</a></h1>
+<div class="section" id="arquivos-dos-que-se-compon">
+<h2>Arquivos dos que se compón<a class="headerlink" href="#arquivos-dos-que-se-compon" title="Enlazar permanentemente con este título">¶</a></h2>
+<div class="section" id="interfaz-do-menu-principal">
+<h3>Interfaz do menú principal<a class="headerlink" href="#interfaz-do-menu-principal" title="Enlazar permanentemente con este título">¶</a></h3>
+<div class="section" id="module-PDI_menuPrincipal">
+<span id="pdi-menuprincipal"></span><h4>(PDI_menuPrincipal)<a class="headerlink" href="#module-PDI_menuPrincipal" title="Enlazar permanentemente con este título">¶</a></h4>
+<div class="section" id="pdi-menuprincipal-py">
+<h5>PDI_menuPrincipal.py<a class="headerlink" href="#pdi-menuprincipal-py" title="Enlazar permanentemente con este título">¶</a></h5>
+<p>Arquivo que contén a interfaz do menú principal</p>
+<dl class="class">
+<dt id="PDI_menuPrincipal.Venta">
+<em class="property">class </em><code class="descclassname">PDI_menuPrincipal.</code><code class="descname">Venta</code><a class="reference internal" href="_modules/PDI_menuPrincipal.html#Venta"><span class="viewcode-link">[fuente]</span></a><a class="headerlink" href="#PDI_menuPrincipal.Venta" title="Enlazar permanentemente con esta definición">¶</a></dt>
+<dd><p>Clase que conten as funcións do menú principal e os seus elementos</p>
+<dl class="method">
+<dt id="PDI_menuPrincipal.Venta.on_bProdutos_clicked">
+<code class="descname">on_bProdutos_clicked</code><span class="sig-paren">(</span><em>widget</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PDI_menuPrincipal.html#Venta.on_bProdutos_clicked"><span class="viewcode-link">[fuente]</span></a><a class="headerlink" href="#PDI_menuPrincipal.Venta.on_bProdutos_clicked" title="Enlazar permanentemente con esta definición">¶</a></dt>
+<dd><p>Función que se executa ao facer clic no botón «Produtos/Servizos». Importa o arquivo da ventá de servizos
+e oculta o menú principal. Se se pecha a ventá de servizos, volve a mostrar a principal</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parámetros:</th><td class="field-body"><strong>widget</strong> – manexa o control de eventos ao facer clic no boton</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Devuelve:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="PDI_menuPrincipal.Venta.on_bSair_clicked">
+<code class="descname">on_bSair_clicked</code><span class="sig-paren">(</span><em>widget</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PDI_menuPrincipal.html#Venta.on_bSair_clicked"><span class="viewcode-link">[fuente]</span></a><a class="headerlink" href="#PDI_menuPrincipal.Venta.on_bSair_clicked" title="Enlazar permanentemente con esta definición">¶</a></dt>
+<dd><p>Función que se executa ao facer clic no botón «Saír». Pecha a ventá do menú principal e finaliza o programa</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parámetros:</th><td class="field-body"><strong>widget</strong> – manexa o control de eventos ao facer clic no boton</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Devuelve:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="PDI_menuPrincipal.Venta.on_bXestion_clicked">
+<code class="descname">on_bXestion_clicked</code><span class="sig-paren">(</span><em>widget</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PDI_menuPrincipal.html#Venta.on_bXestion_clicked"><span class="viewcode-link">[fuente]</span></a><a class="headerlink" href="#PDI_menuPrincipal.Venta.on_bXestion_clicked" title="Enlazar permanentemente con esta definición">¶</a></dt>
+<dd><p>Función que se executa ao facer clic no botón «Xestión de clientes». Importa outro arquivo e crea unha
+ventá a partir deste e conecta a esta ventá nova o eventos de peche para que volva a abrir o menú principal</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parámetros:</th><td class="field-body"><strong>widget</strong> – manexa o control de eventos ao facer clic no boton</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Devuelve:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="PDI_menuPrincipal.Venta.on_destroy">
+<code class="descname">on_destroy</code><span class="sig-paren">(</span><em>widget=None</em>, <em>*data</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PDI_menuPrincipal.html#Venta.on_destroy"><span class="viewcode-link">[fuente]</span></a><a class="headerlink" href="#PDI_menuPrincipal.Venta.on_destroy" title="Enlazar permanentemente con esta definición">¶</a></dt>
+<dd><p>Función que se executa cada vez que se pechen as ventás secundarias conectadas a este evento. Mostra o menú
+principal</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parámetros:</th><td class="field-body"><ul class="first simple">
+<li><strong>widget</strong> – </li>
+<li><strong>data</strong> – </li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Devuelve:</th><td class="field-body"><p class="first last"></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="PDI_menuPrincipal.main">
+<code class="descclassname">PDI_menuPrincipal.</code><code class="descname">main</code><span class="sig-paren">(</span><em>args=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PDI_menuPrincipal.html#main"><span class="viewcode-link">[fuente]</span></a><a class="headerlink" href="#PDI_menuPrincipal.main" title="Enlazar permanentemente con esta definición">¶</a></dt>
+<dd><p>Función que executará a ventá principal para iniciar o programa. Se emprega para iniciar o programa desde a consola.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parámetros:</th><td class="field-body"><strong>args</strong> – parametro que ten que estar baleiro para poder usalo como metodo a executar no setup.py</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Devuelve:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+</div>
+</div>
+<div class="section" id="interfaz-da-xestion-de-clientes">
+<h3>Interfaz da xestión de clientes<a class="headerlink" href="#interfaz-da-xestion-de-clientes" title="Enlazar permanentemente con este título">¶</a></h3>
+<div class="section" id="module-PDI_xestionClientes">
+<span id="pdi-xestionclientes"></span><h4>(PDI_xestionClientes)<a class="headerlink" href="#module-PDI_xestionClientes" title="Enlazar permanentemente con este título">¶</a></h4>
+<div class="section" id="pdi-xestionclientes-py">
+<h5>PDI_xestionClientes.py<a class="headerlink" href="#pdi-xestionclientes-py" title="Enlazar permanentemente con este título">¶</a></h5>
+<p>Arquivo que contén a interfaz do menú de produtos/servizos</p>
+<dl class="class">
+<dt id="PDI_xestionClientes.VentaClientes">
+<em class="property">class </em><code class="descclassname">PDI_xestionClientes.</code><code class="descname">VentaClientes</code><a class="reference internal" href="_modules/PDI_xestionClientes.html#VentaClientes"><span class="viewcode-link">[fuente]</span></a><a class="headerlink" href="#PDI_xestionClientes.VentaClientes" title="Enlazar permanentemente con esta definición">¶</a></dt>
+<dd><p>Clase que conten as funcións do menú para xestionar os clientes dispoñibles</p>
+<dl class="method">
+<dt id="PDI_xestionClientes.VentaClientes.check_connection">
+<code class="descname">check_connection</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/PDI_xestionClientes.html#VentaClientes.check_connection"><span class="viewcode-link">[fuente]</span></a><a class="headerlink" href="#PDI_xestionClientes.VentaClientes.check_connection" title="Enlazar permanentemente con esta definición">¶</a></dt>
+<dd><p>Comproba a conexión da base de datos. Se non está conectada, realiza a conexión</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Devuelve:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="PDI_xestionClientes.VentaClientes.onSelectionChanged">
+<code class="descname">onSelectionChanged</code><span class="sig-paren">(</span><em>tree_selection</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PDI_xestionClientes.html#VentaClientes.onSelectionChanged"><span class="viewcode-link">[fuente]</span></a><a class="headerlink" href="#PDI_xestionClientes.VentaClientes.onSelectionChanged" title="Enlazar permanentemente con esta definición">¶</a></dt>
+<dd><p>Obtén o índice da fila seleccionada do treeview, se hai unha fila seleccionada actívanse os botóns de borrar e
+xerar o informe dun cliente</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parámetros:</th><td class="field-body"><strong>tree_selection</strong> – </td>
+</tr>
+<tr class="field-even field"><th class="field-name">Devuelve:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="PDI_xestionClientes.VentaClientes.on_bAceptar_clicked">
+<code class="descname">on_bAceptar_clicked</code><span class="sig-paren">(</span><em>widget</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PDI_xestionClientes.html#VentaClientes.on_bAceptar_clicked"><span class="viewcode-link">[fuente]</span></a><a class="headerlink" href="#PDI_xestionClientes.VentaClientes.on_bAceptar_clicked" title="Enlazar permanentemente con esta definición">¶</a></dt>
+<dd><p>Función que se executa ao pulsar o botón «Aceptar» que inserta os datos introducidos polo usuario na base de
+datos e borra os datos introducidos nas caixas de texto</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parámetros:</th><td class="field-body"><strong>widget</strong> – </td>
+</tr>
+<tr class="field-even field"><th class="field-name">Devuelve:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="PDI_xestionClientes.VentaClientes.on_bBorrarCampos_clicked">
+<code class="descname">on_bBorrarCampos_clicked</code><span class="sig-paren">(</span><em>widget</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PDI_xestionClientes.html#VentaClientes.on_bBorrarCampos_clicked"><span class="viewcode-link">[fuente]</span></a><a class="headerlink" href="#PDI_xestionClientes.VentaClientes.on_bBorrarCampos_clicked" title="Enlazar permanentemente con esta definición">¶</a></dt>
+<dd><p>Función que se executa ao facer clic no botón «Borrar campos». Busca a fila seleccionada, recolle o seu id e a
+elimina da base de datos. Unha vez realizada a operación, desconectase da base de datos</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parámetros:</th><td class="field-body"><strong>widget</strong> – </td>
+</tr>
+<tr class="field-even field"><th class="field-name">Devuelve:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="PDI_xestionClientes.VentaClientes.on_bBorrarSeleccion_clicked">
+<code class="descname">on_bBorrarSeleccion_clicked</code><span class="sig-paren">(</span><em>widget</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PDI_xestionClientes.html#VentaClientes.on_bBorrarSeleccion_clicked"><span class="viewcode-link">[fuente]</span></a><a class="headerlink" href="#PDI_xestionClientes.VentaClientes.on_bBorrarSeleccion_clicked" title="Enlazar permanentemente con esta definición">¶</a></dt>
+<dd><p>Función que se executa ao pulsar o botón «Desfacer selección». Desfai a selección de filas e desactiva os botóns
+de xerar un cliente e de borrar campos</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parámetros:</th><td class="field-body"><strong>widget</strong> – </td>
+</tr>
+<tr class="field-even field"><th class="field-name">Devuelve:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="PDI_xestionClientes.VentaClientes.on_bBorrar_clicked">
+<code class="descname">on_bBorrar_clicked</code><span class="sig-paren">(</span><em>widget</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PDI_xestionClientes.html#VentaClientes.on_bBorrar_clicked"><span class="viewcode-link">[fuente]</span></a><a class="headerlink" href="#PDI_xestionClientes.VentaClientes.on_bBorrar_clicked" title="Enlazar permanentemente con esta definición">¶</a></dt>
+<dd><p>Función que se executa ao pulsar o botón «Borrar» que resetea o formulario aos valores iniciais</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parámetros:</th><td class="field-body"><strong>widget</strong> – </td>
+</tr>
+<tr class="field-even field"><th class="field-name">Devuelve:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="PDI_xestionClientes.VentaClientes.on_bBuscar_clicked">
+<code class="descname">on_bBuscar_clicked</code><span class="sig-paren">(</span><em>widget</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PDI_xestionClientes.html#VentaClientes.on_bBuscar_clicked"><span class="viewcode-link">[fuente]</span></a><a class="headerlink" href="#PDI_xestionClientes.VentaClientes.on_bBuscar_clicked" title="Enlazar permanentemente con esta definición">¶</a></dt>
+<dd><blockquote>
+<div>Función que se executa ao facer clic no botón «Buscar». Compara o valor seleccionado no ComboBox co diccionario
+e busca o campo escrito na fila seleccionada do ComboBox na base de datos</div></blockquote>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parámetros:</th><td class="field-body"><strong>widget</strong> – </td>
+</tr>
+<tr class="field-even field"><th class="field-name">Devuelve:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="PDI_xestionClientes.VentaClientes.on_bVerTodo_clicked">
+<code class="descname">on_bVerTodo_clicked</code><span class="sig-paren">(</span><em>widget</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PDI_xestionClientes.html#VentaClientes.on_bVerTodo_clicked"><span class="viewcode-link">[fuente]</span></a><a class="headerlink" href="#PDI_xestionClientes.VentaClientes.on_bVerTodo_clicked" title="Enlazar permanentemente con esta definición">¶</a></dt>
+<dd><p>Función que se executa ao facer clic no botón «Ver tódolos clientes». Actualiza o treeview e mostra todolos
+clientes da base de datos</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parámetros:</th><td class="field-body"><strong>widget</strong> – </td>
+</tr>
+<tr class="field-even field"><th class="field-name">Devuelve:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="PDI_xestionClientes.VentaClientes.on_bVoltar_clicked">
+<code class="descname">on_bVoltar_clicked</code><span class="sig-paren">(</span><em>widget</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PDI_xestionClientes.html#VentaClientes.on_bVoltar_clicked"><span class="viewcode-link">[fuente]</span></a><a class="headerlink" href="#PDI_xestionClientes.VentaClientes.on_bVoltar_clicked" title="Enlazar permanentemente con esta definición">¶</a></dt>
+<dd><p>Función que se executa ao facer clic no botón «Voltar ao menú». Pecha a conexión coa base de datos e pecha a ventá
+actual</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parámetros:</th><td class="field-body"><strong>widget</strong> – </td>
+</tr>
+<tr class="field-even field"><th class="field-name">Devuelve:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="PDI_xestionClientes.VentaClientes.on_bXerarTodolosClientes_clicked">
+<code class="descname">on_bXerarTodolosClientes_clicked</code><span class="sig-paren">(</span><em>widget</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PDI_xestionClientes.html#VentaClientes.on_bXerarTodolosClientes_clicked"><span class="viewcode-link">[fuente]</span></a><a class="headerlink" href="#PDI_xestionClientes.VentaClientes.on_bXerarTodolosClientes_clicked" title="Enlazar permanentemente con esta definición">¶</a></dt>
+<dd><p>Función que se executa ao pulsar o botón «Xerar informe de tódolos clientes». Xera un arquivo pdf coas fichas de
+tódolos clientes da base de datos.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parámetros:</th><td class="field-body"><strong>widget</strong> – </td>
+</tr>
+<tr class="field-even field"><th class="field-name">Devuelve:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="PDI_xestionClientes.VentaClientes.on_bXerarUnCliente_clicked">
+<code class="descname">on_bXerarUnCliente_clicked</code><span class="sig-paren">(</span><em>widget</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PDI_xestionClientes.html#VentaClientes.on_bXerarUnCliente_clicked"><span class="viewcode-link">[fuente]</span></a><a class="headerlink" href="#PDI_xestionClientes.VentaClientes.on_bXerarUnCliente_clicked" title="Enlazar permanentemente con esta definición">¶</a></dt>
+<dd><p>Función que se executa ao pulsar o botón «Xerar informe cliente/s seleccionado/s». Crea un arquivo pdf coas fichas
+dos clientes (filas) seleccionados.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parámetros:</th><td class="field-body"><strong>widget</strong> – </td>
+</tr>
+<tr class="field-even field"><th class="field-name">Devuelve:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="PDI_xestionClientes.VentaClientes.on_notebook_switch_page">
+<code class="descname">on_notebook_switch_page</code><span class="sig-paren">(</span><em>notebook</em>, <em>tab</em>, <em>index</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PDI_xestionClientes.html#VentaClientes.on_notebook_switch_page"><span class="viewcode-link">[fuente]</span></a><a class="headerlink" href="#PDI_xestionClientes.VentaClientes.on_notebook_switch_page" title="Enlazar permanentemente con esta definición">¶</a></dt>
+<dd><p>Función que se executa ao cambiar de pestaña no notebook. Actualiza o listore e mostra os datos actualizados no
+caso de facer unha nova inserción</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parámetros:</th><td class="field-body"><ul class="first simple">
+<li><strong>notebook</strong> – </li>
+<li><strong>tab</strong> – </li>
+<li><strong>index</strong> – </li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Devuelve:</th><td class="field-body"><p class="first last"></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="PDI_xestionClientes.VentaClientes.select_clientes">
+<code class="descname">select_clientes</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/PDI_xestionClientes.html#VentaClientes.select_clientes"><span class="viewcode-link">[fuente]</span></a><a class="headerlink" href="#PDI_xestionClientes.VentaClientes.select_clientes" title="Enlazar permanentemente con esta definición">¶</a></dt>
+<dd><p>Recolle todolos produtos contidos na taboa clientes da base de datos e os inserta no treeview</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Devuelve:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+</div>
+<div class="section" id="interfaz-de-produtos-e-servizos">
+<h3>Interfaz de produtos e servizos<a class="headerlink" href="#interfaz-de-produtos-e-servizos" title="Enlazar permanentemente con este título">¶</a></h3>
+<div class="section" id="module-PDI_produtosServizos">
+<span id="pdi-produtosservizos"></span><h4>(PDI_produtosServizos)<a class="headerlink" href="#module-PDI_produtosServizos" title="Enlazar permanentemente con este título">¶</a></h4>
+<div class="section" id="pdi-produtosservizos-py">
+<h5>PDI_produtosServizos.py<a class="headerlink" href="#pdi-produtosservizos-py" title="Enlazar permanentemente con este título">¶</a></h5>
+<p>Arquivo que contén a interfaz do menú de produtos/servizos</p>
+<dl class="class">
+<dt id="PDI_produtosServizos.VentaServizos">
+<em class="property">class </em><code class="descclassname">PDI_produtosServizos.</code><code class="descname">VentaServizos</code><a class="reference internal" href="_modules/PDI_produtosServizos.html#VentaServizos"><span class="viewcode-link">[fuente]</span></a><a class="headerlink" href="#PDI_produtosServizos.VentaServizos" title="Enlazar permanentemente con esta definición">¶</a></dt>
+<dd><p>Clase que conten as funcións do menú para xestionar os produtos e servizos</p>
+<dl class="method">
+<dt id="PDI_produtosServizos.VentaServizos.check_connection">
+<code class="descname">check_connection</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/PDI_produtosServizos.html#VentaServizos.check_connection"><span class="viewcode-link">[fuente]</span></a><a class="headerlink" href="#PDI_produtosServizos.VentaServizos.check_connection" title="Enlazar permanentemente con esta definición">¶</a></dt>
+<dd><p>Comproba a conexión da base de datos. Se non está conectada, realiza a conexión</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Devuelve:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="PDI_produtosServizos.VentaServizos.color_activated">
+<code class="descname">color_activated</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/PDI_produtosServizos.html#VentaServizos.color_activated"><span class="viewcode-link">[fuente]</span></a><a class="headerlink" href="#PDI_produtosServizos.VentaServizos.color_activated" title="Enlazar permanentemente con esta definición">¶</a></dt>
+<dd><p>Método que se executa ao facer doble nunha columna non editable, como o id, ou o color. Neste caso cambia
+o cor mostrado na táboa na base de datos, abrindo un cadro de diálogo para escoller un cor e devolve o seu
+código hexadecimal</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Devuelve:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="PDI_produtosServizos.VentaServizos.on_bGardar_clicked">
+<code class="descname">on_bGardar_clicked</code><span class="sig-paren">(</span><em>widget</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PDI_produtosServizos.html#VentaServizos.on_bGardar_clicked"><span class="viewcode-link">[fuente]</span></a><a class="headerlink" href="#PDI_produtosServizos.VentaServizos.on_bGardar_clicked" title="Enlazar permanentemente con esta definición">¶</a></dt>
+<dd><p>Función que se executa ao facer clic no botón «gardar cambios». Recolle os campos editados no treeview e segundo
+pertenzan a un listore ou a outro os inserta nun determinado diccionario, e compara as suas claves con outros
+diccionarios equivalentes para insertalos nunha base de datos ou noutra.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parámetros:</th><td class="field-body"><strong>widget</strong> – </td>
+</tr>
+<tr class="field-even field"><th class="field-name">Devuelve:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="PDI_produtosServizos.VentaServizos.on_bVoltar_clicked">
+<code class="descname">on_bVoltar_clicked</code><span class="sig-paren">(</span><em>widget</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PDI_produtosServizos.html#VentaServizos.on_bVoltar_clicked"><span class="viewcode-link">[fuente]</span></a><a class="headerlink" href="#PDI_produtosServizos.VentaServizos.on_bVoltar_clicked" title="Enlazar permanentemente con esta definición">¶</a></dt>
+<dd><p>Función que se executa ao pulsar o botón de «Voltar ao menú». Se a base de datos está conectada, a desconecta e
+pecha a ventá actual.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parámetros:</th><td class="field-body"><strong>widget</strong> – </td>
+</tr>
+<tr class="field-even field"><th class="field-name">Devuelve:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="PDI_produtosServizos.VentaServizos.on_bXerarInforme_clicked">
+<code class="descname">on_bXerarInforme_clicked</code><span class="sig-paren">(</span><em>widget</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PDI_produtosServizos.html#VentaServizos.on_bXerarInforme_clicked"><span class="viewcode-link">[fuente]</span></a><a class="headerlink" href="#PDI_produtosServizos.VentaServizos.on_bXerarInforme_clicked" title="Enlazar permanentemente con esta definición">¶</a></dt>
+<dd><p>Función que se executa ao facer clic no botón «xerar informe final». Crea un arquivo en formato PDF que inserta
+as diferentes gráficas xeradas a partir da base de datos</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parámetros:</th><td class="field-body"><strong>widget</strong> – </td>
+</tr>
+<tr class="field-even field"><th class="field-name">Devuelve:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="PDI_produtosServizos.VentaServizos.on_row_activated">
+<code class="descname">on_row_activated</code><span class="sig-paren">(</span><em>widget</em>, <em>row</em>, <em>col</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PDI_produtosServizos.html#VentaServizos.on_row_activated"><span class="viewcode-link">[fuente]</span></a><a class="headerlink" href="#PDI_produtosServizos.VentaServizos.on_row_activated" title="Enlazar permanentemente con esta definición">¶</a></dt>
+<dd><p>Método que modifica o cor seleccionado polo usuario na base de datos</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parámetros:</th><td class="field-body"><ul class="first simple">
+<li><strong>widget</strong> – </li>
+<li><strong>row</strong> – </li>
+<li><strong>col</strong> – </li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Devuelve:</th><td class="field-body"><p class="first last"></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="PDI_produtosServizos.VentaServizos.select_produtos">
+<code class="descname">select_produtos</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/PDI_produtosServizos.html#VentaServizos.select_produtos"><span class="viewcode-link">[fuente]</span></a><a class="headerlink" href="#PDI_produtosServizos.VentaServizos.select_produtos" title="Enlazar permanentemente con esta definición">¶</a></dt>
+<dd><p>Recolle todolos produtos contidos na taboa produtos da base de datos e os inserta no treeview</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Devuelve:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="PDI_produtosServizos.VentaServizos.select_servizos">
+<code class="descname">select_servizos</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/PDI_produtosServizos.html#VentaServizos.select_servizos"><span class="viewcode-link">[fuente]</span></a><a class="headerlink" href="#PDI_produtosServizos.VentaServizos.select_servizos" title="Enlazar permanentemente con esta definición">¶</a></dt>
+<dd><p>Recolle todolos produtos contidos na taboa servizos da base de datos e os inserta no treeview</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Devuelve:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="PDI_produtosServizos.VentaServizos.text_edited">
+<code class="descname">text_edited</code><span class="sig-paren">(</span><em>w</em>, <em>row</em>, <em>new_text</em>, <em>model</em>, <em>column</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PDI_produtosServizos.html#VentaServizos.text_edited"><span class="viewcode-link">[fuente]</span></a><a class="headerlink" href="#PDI_produtosServizos.VentaServizos.text_edited" title="Enlazar permanentemente con esta definición">¶</a></dt>
+<dd><p>Execútase cada vez que se edita unha fila do treeview, para que non se eliminen os cambios cada vez que cambiamos
+de fila. Como a listore contén tipos de datos distintos, fai un casting para que non salte unha excepción de tipo
+int, string… Se o listore editado é dun tipo concreto almacenase nun diccionario ou noutro para a súa posterior
+manipulación.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parámetros:</th><td class="field-body"><ul class="first simple">
+<li><strong>w</strong> – </li>
+<li><strong>row</strong> – fila editada</li>
+<li><strong>new_text</strong> – texto editado</li>
+<li><strong>model</strong> – listore editado</li>
+<li><strong>column</strong> – columna editada</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Devuelve:</th><td class="field-body"><p class="first last"></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="PDI_produtosServizos.VentaServizos.xerar_barChart_serv">
+<code class="descname">xerar_barChart_serv</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/PDI_produtosServizos.html#VentaServizos.xerar_barChart_serv"><span class="viewcode-link">[fuente]</span></a><a class="headerlink" href="#PDI_produtosServizos.VentaServizos.xerar_barChart_serv" title="Enlazar permanentemente con esta definición">¶</a></dt>
+<dd><p>Xera un gráfico de barras co número de empregados por departamento nos últimos 8 meses a partir da base de datos</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Devuelve:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="PDI_produtosServizos.VentaServizos.xerar_pieChart_serv">
+<code class="descname">xerar_pieChart_serv</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/PDI_produtosServizos.html#VentaServizos.xerar_pieChart_serv"><span class="viewcode-link">[fuente]</span></a><a class="headerlink" href="#PDI_produtosServizos.VentaServizos.xerar_pieChart_serv" title="Enlazar permanentemente con esta definición">¶</a></dt>
+<dd><p>Xera unha gráfica circular co número de empregados por servizo, obtidos da base de datos</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Devuelve:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="PDI_produtosServizos.VentaServizos.xerar_taboa_prods">
+<code class="descname">xerar_taboa_prods</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/PDI_produtosServizos.html#VentaServizos.xerar_taboa_prods"><span class="viewcode-link">[fuente]</span></a><a class="headerlink" href="#PDI_produtosServizos.VentaServizos.xerar_taboa_prods" title="Enlazar permanentemente con esta definición">¶</a></dt>
+<dd><p>Xera unha táboa cos 10 produtos máis vendidos e con stock pendente de renovar cos datos obtidos da base de datos</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Devuelve:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="index.html" title="capítulo anterior">Benvido/a á documentación de ProxectoDI!</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Búsqueda rápida</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Ir a" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2020, Alba Perez Cesar.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.7</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.8</a>
+      
+      |
+      <a href="_sources/documentacion.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

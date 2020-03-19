@@ -1,0 +1,805 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="es">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>PDI_produtosServizos &#8212; documentación de ProxectoDI - 0.0.1</title>
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/translations.js"></script>
+    <link rel="index" title="Índice" href="../genindex.html" />
+    <link rel="search" title="Búsqueda" href="../search.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Código fuente para PDI_produtosServizos</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">PDI_produtosServizos.py</span>
+<span class="sd">====================================</span>
+<span class="sd">Arquivo que contén a interfaz do menú de produtos/servizos</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">gi</span>
+<span class="kn">import</span> <span class="nn">sqlite3</span>
+<span class="kn">import</span> <span class="nn">datetime</span>
+
+<span class="kn">from</span> <span class="nn">reportlab.graphics.shapes</span> <span class="k">import</span> <span class="n">Drawing</span>
+<span class="kn">from</span> <span class="nn">reportlab.lib.styles</span> <span class="k">import</span> <span class="n">getSampleStyleSheet</span>
+<span class="kn">from</span> <span class="nn">reportlab.platypus</span> <span class="k">import</span> <span class="p">(</span><span class="n">SimpleDocTemplate</span><span class="p">,</span> <span class="n">Spacer</span><span class="p">,</span> <span class="n">Table</span><span class="p">,</span> <span class="n">Paragraph</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">reportlab.lib.pagesizes</span> <span class="k">import</span> <span class="n">A4</span>
+<span class="kn">from</span> <span class="nn">reportlab.lib</span> <span class="k">import</span> <span class="n">colors</span><span class="p">,</span> <span class="n">styles</span>
+
+<span class="n">gi</span><span class="o">.</span><span class="n">require_version</span><span class="p">(</span><span class="s1">&#39;Gtk&#39;</span><span class="p">,</span> <span class="s1">&#39;3.0&#39;</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">gi.repository</span> <span class="k">import</span> <span class="n">Gtk</span>
+
+
+<div class="viewcode-block" id="VentaServizos"><a class="viewcode-back" href="../documentacion.html#PDI_produtosServizos.VentaServizos">[documentos]</a><span class="k">class</span> <span class="nc">VentaServizos</span><span class="p">(</span><span class="n">Gtk</span><span class="o">.</span><span class="n">Window</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Clase que conten as funcións do menú para xestionar os produtos e servizos</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Función que se executa cada vez que se inicia a clase e inicializa os elementos contidos nela (elementos físicos,</span>
+<span class="sd">        base de datos...)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">Gtk</span><span class="o">.</span><span class="n">Window</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Produtos/Servizos&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">datos1</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">datos2</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">story</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_default_size</span><span class="p">(</span><span class="mi">700</span><span class="p">,</span> <span class="mi">500</span><span class="p">)</span>
+        <span class="c1"># print(self.get_size())</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_border_width</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">connFlag</span> <span class="o">=</span> <span class="kc">True</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">conn</span> <span class="o">=</span> <span class="n">sqlite3</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s1">&#39;lista_clientes.db&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cursor</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conn</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s1">&#39;&#39;&#39;CREATE TABLE if not exists produtos (id integer PRIMARY KEY, nom_prod text, </span>
+<span class="s1">        prezo real, stock integer, color text, nvendas integer)&#39;&#39;&#39;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;INSERT INTO produtos(id, nom_prod, prezo, stock, color, nvendas) </span>
+<span class="s2">                SELECT 1, &#39;mesa&#39;, &#39;15.9&#39;, &#39;136&#39;, &#39;#FFB5E8&#39;, 50</span>
+<span class="s2">                WHERE NOT EXISTS(SELECT 1 FROM produtos WHERE id = 1)&quot;&quot;&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;INSERT INTO produtos(id, nom_prod, prezo, stock, color, nvendas) </span>
+<span class="s2">                        SELECT 2, &#39;sofa&#39;, &#39;152.2&#39;, &#39;4566&#39;, &#39;#FF9CEE&#39;, 152</span>
+<span class="s2">                        WHERE NOT EXISTS(SELECT 1 FROM produtos WHERE id = 2)&quot;&quot;&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;INSERT INTO produtos(id, nom_prod, prezo, stock, color, nvendas) </span>
+<span class="s2">                            SELECT 3, &#39;lampara&#39;, &#39;30.0&#39;, &#39;100&#39;, &#39;#FFCCF9&#39;, 33</span>
+<span class="s2">                            WHERE NOT EXISTS(SELECT 1 FROM produtos WHERE id = 3)&quot;&quot;&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;INSERT INTO produtos(id, nom_prod, prezo, stock, color, nvendas) </span>
+<span class="s2">                             SELECT 4, &#39;estanteria&#39;, &#39;480.4&#39;, &#39;51&#39;, &#39;#FCC2FF&#39;, 300</span>
+<span class="s2">                             WHERE NOT EXISTS(SELECT 1 FROM produtos WHERE id = 4)&quot;&quot;&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;INSERT INTO produtos(id, nom_prod, prezo, stock, color, nvendas) </span>
+<span class="s2">                            SELECT 5, &#39;comoda&#39;, &#39;654.21&#39;, &#39;15&#39;, &#39;#F6A6FF&#39;, 41</span>
+<span class="s2">                            WHERE NOT EXISTS(SELECT 1 FROM produtos WHERE id = 5)&quot;&quot;&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;INSERT INTO produtos(id, nom_prod, prezo, stock, color, nvendas) </span>
+<span class="s2">                             SELECT 6, &#39;cama&#39;, &#39;360.0&#39;, &#39;200&#39;, &#39;#B28DFF&#39;, 5</span>
+<span class="s2">                            WHERE NOT EXISTS(SELECT 1 FROM produtos WHERE id = 6)&quot;&quot;&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;INSERT INTO produtos(id, nom_prod, prezo, stock, color, nvendas) </span>
+<span class="s2">                            SELECT 7, &#39;sillon&#39;, &#39;41.21&#39;, &#39;24&#39;, &#39;#C5A3FF&#39;, 214</span>
+<span class="s2">                            WHERE NOT EXISTS(SELECT 1 FROM produtos WHERE id = 7)&quot;&quot;&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;INSERT INTO produtos(id, nom_prod, prezo, stock, color, nvendas) </span>
+<span class="s2">                            SELECT 8, &#39;hamaca&#39;, &#39;62.0&#39;, &#39;200&#39;, &#39;#D5AAFF&#39;, 10</span>
+<span class="s2">                            WHERE NOT EXISTS(SELECT 1 FROM produtos WHERE id = 8)&quot;&quot;&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;INSERT INTO produtos(id, nom_prod, prezo, stock, color, nvendas) </span>
+<span class="s2">                            SELECT 9, &#39;lavadora&#39;, &#39;69.1&#39;, &#39;10&#39;, &#39;#ECD4FF&#39;, 5</span>
+<span class="s2">                            WHERE NOT EXISTS(SELECT 1 FROM produtos WHERE id = 9)&quot;&quot;&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;INSERT INTO produtos(id, nom_prod, prezo, stock, color, nvendas) </span>
+<span class="s2">                            SELECT 10, &#39;bañeira&#39;, &#39;480.0&#39;, &#39;6&#39;, &#39;#FBE4FF&#39;, 150</span>
+<span class="s2">                            WHERE NOT EXISTS(SELECT 1 FROM produtos WHERE id = 10)&quot;&quot;&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;INSERT INTO produtos(id, nom_prod, prezo, stock, color, nvendas) </span>
+<span class="s2">                            SELECT 11, &#39;botiquin&#39;, &#39;20.36&#39;, &#39;40&#39;, &#39;#DCD3FF&#39;, 87</span>
+<span class="s2">                            WHERE NOT EXISTS(SELECT 1 FROM produtos WHERE id = 11)&quot;&quot;&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;INSERT INTO produtos(id, nom_prod, prezo, stock, color, nvendas) </span>
+<span class="s2">                            SELECT 12, &#39;grifo&#39;, &#39;23.0&#39;, &#39;154&#39;, &#39;#A79AFF&#39;, 305</span>
+<span class="s2">                            WHERE NOT EXISTS(SELECT 1 FROM produtos WHERE id = 12)&quot;&quot;&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;INSERT INTO produtos(id, nom_prod, prezo, stock, color, nvendas) </span>
+<span class="s2">                            SELECT 13, &#39;lavabo&#39;, &#39;650.0&#39;, &#39;52&#39;, &#39;#B5B9FF&#39;, 65</span>
+<span class="s2">                            WHERE NOT EXISTS(SELECT 1 FROM produtos WHERE id = 13)&quot;&quot;&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;INSERT INTO produtos(id, nom_prod, prezo, stock, color, nvendas) </span>
+<span class="s2">                            SELECT 14, &#39;fregadeiro&#39;, &#39;98.48&#39;, &#39;69&#39;, &#39;#97A2FF&#39;, 25</span>
+<span class="s2">                            WHERE NOT EXISTS(SELECT 1 FROM produtos WHERE id = 14)&quot;&quot;&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;INSERT INTO produtos(id, nom_prod, prezo, stock, color, nvendas) </span>
+<span class="s2">                            SELECT 15, &#39;vitroceramica&#39;, &#39;458.65&#39;, &#39;56&#39;, &#39;#AFCBFF&#39;, 18</span>
+<span class="s2">                            WHERE NOT EXISTS(SELECT 1 FROM produtos WHERE id = 15)&quot;&quot;&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;INSERT INTO produtos(id, nom_prod, prezo, stock, color, nvendas) </span>
+<span class="s2">                            SELECT 16, &#39;armario&#39;, &#39;657.0&#39;, &#39;41&#39;, &#39;#AFF8DB&#39;, 6</span>
+<span class="s2">                            WHERE NOT EXISTS(SELECT 1 FROM produtos WHERE id = 16)&quot;&quot;&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;INSERT INTO produtos(id, nom_prod, prezo, stock, color, nvendas) </span>
+<span class="s2">                            SELECT 17, &#39;forno&#39;, &#39;549.9&#39;, &#39;206&#39;, &#39;#C4FAF8&#39;, 15</span>
+<span class="s2">                            WHERE NOT EXISTS(SELECT 1 FROM produtos WHERE id = 17)&quot;&quot;&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;INSERT INTO produtos(id, nom_prod, prezo, stock, color, nvendas) </span>
+<span class="s2">                            SELECT 18, &#39;espello&#39;, &#39;88.99&#39;, &#39;48&#39;, &#39;#85E3FF&#39;, 105</span>
+<span class="s2">                            WHERE NOT EXISTS(SELECT 1 FROM produtos WHERE id = 18)&quot;&quot;&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;INSERT INTO produtos(id, nom_prod, prezo, stock, color, nvendas) </span>
+<span class="s2">                            SELECT 19, &#39;ducha&#39;, &#39;20.99&#39;, &#39;90&#39;, &#39;#ACE7FF&#39;, 44</span>
+<span class="s2">                            WHERE NOT EXISTS(SELECT 1 FROM produtos WHERE id = 19)&quot;&quot;&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;INSERT INTO produtos(id, nom_prod, prezo, stock, color, nvendas) </span>
+<span class="s2">                            SELECT 20, &#39;mampara&#39;, &#39;350.3&#39;, &#39;36&#39;, &#39;#6EB5FF&#39;, 14</span>
+<span class="s2">                            WHERE NOT EXISTS(SELECT 1 FROM produtos WHERE id = 20)&quot;&quot;&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;INSERT INTO produtos(id, nom_prod, prezo, stock, color, nvendas) </span>
+<span class="s2">                            SELECT 21, &#39;taladro&#39;, &#39;56.0&#39;, &#39;72&#39;, &#39;#BFFCC6&#39;, 36</span>
+<span class="s2">                            WHERE NOT EXISTS(SELECT 1 FROM produtos WHERE id = 21)&quot;&quot;&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;INSERT INTO produtos(id, nom_prod, prezo, stock, color, nvendas) </span>
+<span class="s2">                            SELECT 22, &#39;martelo&#39;, &#39;18.34&#39;, &#39;92&#39;, &#39;#DBFFD6&#39;, 57</span>
+<span class="s2">                            WHERE NOT EXISTS(SELECT 1 FROM produtos WHERE id = 22)&quot;&quot;&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;INSERT INTO produtos(id, nom_prod, prezo, stock, color, nvendas) </span>
+<span class="s2">                                    SELECT 23, &#39;cinta metrica&#39;, &#39;3.58&#39;, &#39;34&#39;, &#39;#F3FFE3&#39;, 71</span>
+<span class="s2">                                    WHERE NOT EXISTS(SELECT 1 FROM produtos WHERE id = 23)&quot;&quot;&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;INSERT INTO produtos(id, nom_prod, prezo, stock, color, nvendas) </span>
+<span class="s2">                            SELECT 24, &#39;pegamento&#39;, &#39;3.6&#39;, &#39;10&#39;, &#39;#E7FFAC&#39;, 53</span>
+<span class="s2">                            WHERE NOT EXISTS(SELECT 1 FROM produtos WHERE id = 24)&quot;&quot;&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;INSERT INTO produtos(id, nom_prod, prezo, stock, color, nvendas) </span>
+<span class="s2">                            SELECT 25, &#39;serra&#39;, &#39;15.15&#39;, &#39;2&#39;, &#39;#FFFFD1&#39;, 76</span>
+<span class="s2">                            WHERE NOT EXISTS(SELECT 1 FROM produtos WHERE id = 25)&quot;&quot;&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;INSERT INTO produtos(id, nom_prod, prezo, stock, color, nvendas) </span>
+<span class="s2">                            SELECT 26, &#39;desaparafusador&#39;, &#39;2.3&#39;, &#39;61&#39;, &#39;#FFC9DE&#39;, 465</span>
+<span class="s2">                            WHERE NOT EXISTS(SELECT 1 FROM produtos WHERE id = 26)&quot;&quot;&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;INSERT INTO produtos(id, nom_prod, prezo, stock, color, nvendas) </span>
+<span class="s2">                            SELECT 27, &#39;cravos&#39;, &#39;0.05&#39;, &#39;5204&#39;, &#39;#FFABAB&#39;, 3604</span>
+<span class="s2">                            WHERE NOT EXISTS(SELECT 1 FROM produtos WHERE id = 27)&quot;&quot;&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;INSERT INTO produtos(id, nom_prod, prezo, stock, color, nvendas) </span>
+<span class="s2">                            SELECT 28, &#39;parafusos&#39;, &#39;0.05&#39;, &#39;9511&#39;, &#39;#FFBEBC&#39;, 4980</span>
+<span class="s2">                            WHERE NOT EXISTS(SELECT 1 FROM produtos WHERE id = 28)&quot;&quot;&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;INSERT INTO produtos(id, nom_prod, prezo, stock, color, nvendas) </span>
+<span class="s2">                            SELECT 29, &#39;mascarilla&#39;, &#39;14.9&#39;, &#39;304&#39;, &#39;#FFCBC1&#39;, 165</span>
+<span class="s2">                            WHERE NOT EXISTS(SELECT 1 FROM produtos WHERE id = 29)&quot;&quot;&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;INSERT INTO produtos(id, nom_prod, prezo, stock, color, nvendas) </span>
+<span class="s2">                            SELECT 30, &#39;disolvente&#39;, &#39;18.36&#39;, &#39;1257&#39;, &#39;#FFF5BA&#39;, 429</span>
+<span class="s2">                            WHERE NOT EXISTS(SELECT 1 FROM produtos WHERE id = 30)&quot;&quot;&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s1">&#39;&#39;&#39;CREATE TABLE if not exists servizos (id integer PRIMARY KEY, nom_serv text, </span>
+<span class="s1">                departamento texto, nempregados integer)&#39;&#39;&#39;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;INSERT INTO servizos(id, nom_serv, departamento, nempregados) </span>
+<span class="s2">                 SELECT 1, &#39;mantemento&#39;, &#39;produccion&#39;, 10 WHERE NOT EXISTS(SELECT 1 FROM servizos WHERE id = 1)&quot;&quot;&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;INSERT INTO servizos(id, nom_serv, departamento, nempregados) </span>
+<span class="s2">                 SELECT 2, &#39;administracion&#39;, &#39;finanzas&#39;, 5 WHERE NOT EXISTS(SELECT 1 FROM servizos WHERE id = 2)&quot;&quot;&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;INSERT INTO servizos(id, nom_serv, departamento, nempregados) </span>
+<span class="s2">        SELECT 3, &#39;investigacion de mercados&#39;, &#39;publicidade&#39;, 2 WHERE NOT EXISTS(SELECT 1 FROM servizos WHERE id = 3)&quot;&quot;&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;INSERT INTO servizos(id, nom_serv, departamento, nempregados) </span>
+<span class="s2">                         SELECT 4, &#39;contabilidade&#39;, &#39;finanzas&#39;, 14 WHERE NOT EXISTS(SELECT 1 FROM servizos WHERE id = 4)&quot;&quot;&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;INSERT INTO servizos(id, nom_serv, departamento, nempregados) </span>
+<span class="s2">                SELECT 5, &#39;programacion&#39;, &#39;informatica&#39;, 15 WHERE NOT EXISTS(SELECT 1 FROM servizos WHERE id = 5)&quot;&quot;&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;INSERT INTO servizos(id, nom_serv, departamento, nempregados) </span>
+<span class="s2">                SELECT 6, &#39;vendas&#39;, &#39;publicidade&#39;, 8 WHERE NOT EXISTS(SELECT 1 FROM servizos WHERE id = 6)&quot;&quot;&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;INSERT INTO servizos(id, nom_serv, departamento, nempregados) </span>
+<span class="s2">            SELECT 7, &#39;soporte tecnico&#39;, &#39;informatica&#39;, 10 WHERE NOT EXISTS(SELECT 1 FROM servizos WHERE id = 7)&quot;&quot;&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;INSERT INTO servizos(id, nom_serv, departamento, nempregados) </span>
+<span class="s2">            SELECT 8, &#39;desarrollo&#39;, &#39;informatica&#39;, 5 WHERE NOT EXISTS(SELECT 1 FROM servizos WHERE id = 8)&quot;&quot;&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;INSERT INTO servizos(id, nom_serv, departamento, nempregados) </span>
+<span class="s2">            SELECT 9, &#39;distribucion&#39;, &#39;publicidade&#39;, 8 WHERE NOT EXISTS(SELECT 1 FROM servizos WHERE id = 9)&quot;&quot;&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;INSERT INTO servizos(id, nom_serv, departamento, nempregados) </span>
+<span class="s2">        SELECT 10, &#39;direccion de empresas&#39;, &#39;finanzas&#39;, 3 WHERE NOT EXISTS(SELECT 1 FROM servizos WHERE id = 10)&quot;&quot;&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;INSERT INTO servizos(id, nom_serv, departamento, nempregados) </span>
+<span class="s2">             SELECT 11, &#39;recursos humanos&#39;, &#39;finanzas&#39;, 5 WHERE NOT EXISTS(SELECT 1 FROM servizos WHERE id = 11)&quot;&quot;&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">box</span> <span class="o">=</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">Box</span><span class="p">(</span><span class="n">orientation</span><span class="o">=</span><span class="n">Gtk</span><span class="o">.</span><span class="n">Orientation</span><span class="o">.</span><span class="n">VERTICAL</span><span class="p">,</span> <span class="n">spacing</span><span class="o">=</span><span class="mi">6</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">v1</span> <span class="o">=</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">Box</span><span class="p">(</span><span class="n">orientation</span><span class="o">=</span><span class="n">Gtk</span><span class="o">.</span><span class="n">Orientation</span><span class="o">.</span><span class="n">VERTICAL</span><span class="p">,</span> <span class="n">spacing</span><span class="o">=</span><span class="mi">6</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">v1</span><span class="o">.</span><span class="n">pack_start</span><span class="p">(</span><span class="n">Gtk</span><span class="o">.</span><span class="n">Label</span><span class="p">(</span><span class="s2">&quot;Para modificar un produto, faga dobre clic sobre a(s) columna(s) da(s) &quot;</span>
+                                     <span class="s2">&quot;fila(s) que desexe editar e pulse o botón de Gardar cambios.&quot;</span><span class="p">),</span> <span class="kc">False</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">labelExplicacion1</span> <span class="o">=</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">Label</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">labelExplicacion1</span><span class="o">.</span><span class="n">set_markup</span><span class="p">(</span><span class="s2">&quot;&lt;b&gt;Lista de produtos:&lt;/b&gt;&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">v1</span><span class="o">.</span><span class="n">pack_start</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">labelExplicacion1</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">modelo</span> <span class="o">=</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">ListStore</span><span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">select_produtos</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">treeview</span> <span class="o">=</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">TreeView</span><span class="p">(</span><span class="n">model</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">modelo</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">treeview</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s2">&quot;row-activated&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">on_row_activated</span><span class="p">)</span>
+
+        <span class="n">renderer_text</span> <span class="o">=</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">CellRendererText</span><span class="p">()</span>
+        <span class="n">column_text</span> <span class="o">=</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">TreeViewColumn</span><span class="p">(</span><span class="s2">&quot;ID&quot;</span><span class="p">,</span> <span class="n">renderer_text</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">column_text</span><span class="o">.</span><span class="n">set_sort_column_id</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">treeview</span><span class="o">.</span><span class="n">append_column</span><span class="p">(</span><span class="n">column_text</span><span class="p">)</span>
+
+        <span class="n">renderer_text</span> <span class="o">=</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">CellRendererText</span><span class="p">()</span>
+        <span class="n">renderer_text</span><span class="o">.</span><span class="n">set_property</span><span class="p">(</span><span class="s1">&#39;editable&#39;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+        <span class="c1"># renderer_text.connect(&quot;edited&quot;, self.text_edited)</span>
+        <span class="n">renderer_text</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s2">&quot;edited&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">text_edited</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">modelo</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">column_text</span> <span class="o">=</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">TreeViewColumn</span><span class="p">(</span><span class="s2">&quot;Nome&quot;</span><span class="p">,</span> <span class="n">renderer_text</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">column_text</span><span class="o">.</span><span class="n">set_sort_column_id</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">treeview</span><span class="o">.</span><span class="n">append_column</span><span class="p">(</span><span class="n">column_text</span><span class="p">)</span>
+
+        <span class="n">renderer_text</span> <span class="o">=</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">CellRendererText</span><span class="p">()</span>
+        <span class="n">renderer_text</span><span class="o">.</span><span class="n">set_property</span><span class="p">(</span><span class="s1">&#39;editable&#39;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+        <span class="c1"># renderer_text.connect(&quot;edited&quot;, self.text_edited)</span>
+        <span class="n">renderer_text</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s2">&quot;edited&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">text_edited</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">modelo</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="n">column_text</span> <span class="o">=</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">TreeViewColumn</span><span class="p">(</span><span class="s2">&quot;Prezo&quot;</span><span class="p">,</span> <span class="n">renderer_text</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+        <span class="n">column_text</span><span class="o">.</span><span class="n">set_sort_column_id</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">treeview</span><span class="o">.</span><span class="n">append_column</span><span class="p">(</span><span class="n">column_text</span><span class="p">)</span>
+
+        <span class="n">renderer_text</span> <span class="o">=</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">CellRendererText</span><span class="p">()</span>
+        <span class="n">renderer_text</span><span class="o">.</span><span class="n">set_property</span><span class="p">(</span><span class="s1">&#39;editable&#39;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+        <span class="n">renderer_text</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s2">&quot;edited&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">text_edited</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">modelo</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+        <span class="n">column_text</span> <span class="o">=</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">TreeViewColumn</span><span class="p">(</span><span class="s2">&quot;Stock&quot;</span><span class="p">,</span> <span class="n">renderer_text</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+        <span class="n">column_text</span><span class="o">.</span><span class="n">set_sort_column_id</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">treeview</span><span class="o">.</span><span class="n">append_column</span><span class="p">(</span><span class="n">column_text</span><span class="p">)</span>
+
+        <span class="n">renderer_text</span> <span class="o">=</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">CellRendererText</span><span class="p">()</span>
+        <span class="n">column_text</span> <span class="o">=</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">TreeViewColumn</span><span class="p">(</span><span class="s2">&quot;Color&quot;</span><span class="p">,</span> <span class="n">renderer_text</span><span class="p">,</span> <span class="n">background</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+        <span class="n">column_text</span><span class="o">.</span><span class="n">set_sort_column_id</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">treeview</span><span class="o">.</span><span class="n">append_column</span><span class="p">(</span><span class="n">column_text</span><span class="p">)</span>
+
+        <span class="n">renderer_text</span> <span class="o">=</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">CellRendererText</span><span class="p">()</span>
+        <span class="n">renderer_text</span><span class="o">.</span><span class="n">set_property</span><span class="p">(</span><span class="s1">&#39;editable&#39;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+        <span class="n">renderer_text</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s2">&quot;edited&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">text_edited</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">modelo</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+        <span class="n">column_text</span> <span class="o">=</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">TreeViewColumn</span><span class="p">(</span><span class="s2">&quot;Nº de vendas&quot;</span><span class="p">,</span> <span class="n">renderer_text</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+        <span class="n">column_text</span><span class="o">.</span><span class="n">set_sort_column_id</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">treeview</span><span class="o">.</span><span class="n">append_column</span><span class="p">(</span><span class="n">column_text</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">tree_selection</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">treeview</span><span class="o">.</span><span class="n">get_selection</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tree_selection</span><span class="o">.</span><span class="n">set_mode</span><span class="p">(</span><span class="n">Gtk</span><span class="o">.</span><span class="n">SelectionMode</span><span class="o">.</span><span class="n">MULTIPLE</span><span class="p">)</span>
+        <span class="c1"># self.tree_selection.connect(&quot;changed&quot;, self.onSelectionChanged)</span>
+
+        <span class="n">scrollTree</span> <span class="o">=</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">ScrolledWindow</span><span class="p">()</span>
+        <span class="n">scrollTree</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">treeview</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">v1</span><span class="o">.</span><span class="n">pack_start</span><span class="p">(</span><span class="n">scrollTree</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">labelExplicacion2</span> <span class="o">=</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">Label</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">labelExplicacion2</span><span class="o">.</span><span class="n">set_markup</span><span class="p">(</span><span class="s2">&quot;&lt;b&gt;Lista de servizos:&lt;/b&gt;&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">v1</span><span class="o">.</span><span class="n">pack_start</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">labelExplicacion2</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">modelo2</span> <span class="o">=</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">ListStore</span><span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">select_servizos</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">treeview2</span> <span class="o">=</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">TreeView</span><span class="p">(</span><span class="n">model</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">modelo2</span><span class="p">)</span>
+
+        <span class="n">renderer_text2</span> <span class="o">=</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">CellRendererText</span><span class="p">()</span>
+        <span class="n">column_text2</span> <span class="o">=</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">TreeViewColumn</span><span class="p">(</span><span class="s2">&quot;ID&quot;</span><span class="p">,</span> <span class="n">renderer_text2</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">column_text2</span><span class="o">.</span><span class="n">set_sort_column_id</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">treeview2</span><span class="o">.</span><span class="n">append_column</span><span class="p">(</span><span class="n">column_text2</span><span class="p">)</span>
+
+        <span class="n">renderer_text2</span> <span class="o">=</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">CellRendererText</span><span class="p">()</span>
+        <span class="n">renderer_text2</span><span class="o">.</span><span class="n">set_property</span><span class="p">(</span><span class="s1">&#39;editable&#39;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+        <span class="n">renderer_text2</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s2">&quot;edited&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">text_edited</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">modelo2</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">column_text2</span> <span class="o">=</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">TreeViewColumn</span><span class="p">(</span><span class="s2">&quot;Nome&quot;</span><span class="p">,</span> <span class="n">renderer_text2</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">column_text2</span><span class="o">.</span><span class="n">set_sort_column_id</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">treeview2</span><span class="o">.</span><span class="n">append_column</span><span class="p">(</span><span class="n">column_text2</span><span class="p">)</span>
+
+        <span class="n">renderer_text2</span> <span class="o">=</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">CellRendererText</span><span class="p">()</span>
+        <span class="n">renderer_text2</span><span class="o">.</span><span class="n">set_property</span><span class="p">(</span><span class="s1">&#39;editable&#39;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+        <span class="n">renderer_text2</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s2">&quot;edited&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">text_edited</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">modelo2</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="n">column_text2</span> <span class="o">=</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">TreeViewColumn</span><span class="p">(</span><span class="s2">&quot;Departamento&quot;</span><span class="p">,</span> <span class="n">renderer_text2</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+        <span class="n">column_text2</span><span class="o">.</span><span class="n">set_sort_column_id</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">treeview2</span><span class="o">.</span><span class="n">append_column</span><span class="p">(</span><span class="n">column_text2</span><span class="p">)</span>
+
+        <span class="n">renderer_text2</span> <span class="o">=</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">CellRendererText</span><span class="p">()</span>
+        <span class="n">renderer_text2</span><span class="o">.</span><span class="n">set_property</span><span class="p">(</span><span class="s1">&#39;editable&#39;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+        <span class="n">renderer_text2</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s2">&quot;edited&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">text_edited</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">modelo2</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+        <span class="n">column_text2</span> <span class="o">=</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">TreeViewColumn</span><span class="p">(</span><span class="s2">&quot;Nº de empregados&quot;</span><span class="p">,</span> <span class="n">renderer_text2</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+        <span class="n">column_text2</span><span class="o">.</span><span class="n">set_sort_column_id</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">treeview2</span><span class="o">.</span><span class="n">append_column</span><span class="p">(</span><span class="n">column_text2</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">tree_selection2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">treeview2</span><span class="o">.</span><span class="n">get_selection</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tree_selection2</span><span class="o">.</span><span class="n">set_mode</span><span class="p">(</span><span class="n">Gtk</span><span class="o">.</span><span class="n">SelectionMode</span><span class="o">.</span><span class="n">MULTIPLE</span><span class="p">)</span>
+        <span class="c1"># self.tree_selection2.connect(&quot;changed&quot;, self.onSelectionChanged)</span>
+
+        <span class="n">scrollTree2</span> <span class="o">=</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">ScrolledWindow</span><span class="p">()</span>
+        <span class="n">scrollTree2</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">treeview2</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">v1</span><span class="o">.</span><span class="n">pack_start</span><span class="p">(</span><span class="n">scrollTree2</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">box</span><span class="o">.</span><span class="n">pack_start</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">v1</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">v2</span> <span class="o">=</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">Box</span><span class="p">(</span><span class="n">spacing</span><span class="o">=</span><span class="mi">6</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bGardar</span> <span class="o">=</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">Button</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s2">&quot;Gardar cambios&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bGardar</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s2">&quot;clicked&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">on_bGardar_clicked</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">bXerarInforme</span> <span class="o">=</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">Button</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s2">&quot;Xerar informe final&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bXerarInforme</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s2">&quot;clicked&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">on_bXerarInforme_clicked</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">bVoltar</span> <span class="o">=</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">Button</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s2">&quot;Voltar ao menú&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bVoltar</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s2">&quot;clicked&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">on_bVoltar_clicked</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">v2</span><span class="o">.</span><span class="n">pack_start</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bGardar</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">v2</span><span class="o">.</span><span class="n">pack_start</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bXerarInforme</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">v2</span><span class="o">.</span><span class="n">pack_start</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bVoltar</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">box</span><span class="o">.</span><span class="n">pack_start</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">v2</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">box</span><span class="p">)</span>
+
+<div class="viewcode-block" id="VentaServizos.select_produtos"><a class="viewcode-back" href="../documentacion.html#PDI_produtosServizos.VentaServizos.select_produtos">[documentos]</a>    <span class="k">def</span> <span class="nf">select_produtos</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Recolle todolos produtos contidos na taboa produtos da base de datos e os inserta no treeview</span>
+
+<span class="sd">        :return:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;select * from produtos&quot;</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">modelo</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">row</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">row</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">row</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">row</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span> <span class="n">row</span><span class="p">[</span><span class="mi">4</span><span class="p">],</span> <span class="n">row</span><span class="p">[</span><span class="mi">5</span><span class="p">]])</span></div>
+
+<div class="viewcode-block" id="VentaServizos.select_servizos"><a class="viewcode-back" href="../documentacion.html#PDI_produtosServizos.VentaServizos.select_servizos">[documentos]</a>    <span class="k">def</span> <span class="nf">select_servizos</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Recolle todolos produtos contidos na taboa servizos da base de datos e os inserta no treeview</span>
+
+<span class="sd">        :return:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;select * from servizos&quot;</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">modelo2</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">row</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">row</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">row</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">row</span><span class="p">[</span><span class="mi">3</span><span class="p">]])</span></div>
+
+<div class="viewcode-block" id="VentaServizos.check_connection"><a class="viewcode-back" href="../documentacion.html#PDI_produtosServizos.VentaServizos.check_connection">[documentos]</a>    <span class="k">def</span> <span class="nf">check_connection</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Comproba a conexión da base de datos. Se non está conectada, realiza a conexión</span>
+
+<span class="sd">        :return:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">connFlag</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">conn</span> <span class="o">=</span> <span class="n">sqlite3</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s1">&#39;lista_clientes.db&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cursor</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conn</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">connFlag</span> <span class="o">=</span> <span class="kc">True</span></div>
+
+<div class="viewcode-block" id="VentaServizos.on_bGardar_clicked"><a class="viewcode-back" href="../documentacion.html#PDI_produtosServizos.VentaServizos.on_bGardar_clicked">[documentos]</a>    <span class="k">def</span> <span class="nf">on_bGardar_clicked</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">widget</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Función que se executa ao facer clic no botón &quot;gardar cambios&quot;. Recolle os campos editados no treeview e segundo</span>
+<span class="sd">        pertenzan a un listore ou a outro os inserta nun determinado diccionario, e compara as suas claves con outros</span>
+<span class="sd">        diccionarios equivalentes para insertalos nunha base de datos ou noutra.</span>
+
+<span class="sd">        :param widget:</span>
+<span class="sd">        :return:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">model1</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="mi">1</span><span class="p">:</span> <span class="s1">&#39;nom_prod&#39;</span><span class="p">,</span>
+            <span class="mi">2</span><span class="p">:</span> <span class="s1">&#39;prezo&#39;</span><span class="p">,</span>
+            <span class="mi">3</span><span class="p">:</span> <span class="s1">&#39;stock&#39;</span><span class="p">,</span>
+            <span class="mi">4</span><span class="p">:</span> <span class="s1">&#39;color&#39;</span><span class="p">,</span>
+            <span class="mi">5</span><span class="p">:</span> <span class="s1">&#39;nvendas&#39;</span>
+        <span class="p">}</span>
+
+        <span class="n">model2</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="mi">1</span><span class="p">:</span> <span class="s1">&#39;nom_serv&#39;</span><span class="p">,</span>
+            <span class="mi">2</span><span class="p">:</span> <span class="s1">&#39;departamento&#39;</span><span class="p">,</span>
+            <span class="mi">3</span><span class="p">:</span> <span class="s1">&#39;nempregados&#39;</span>
+        <span class="p">}</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">check_connection</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">datos1</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">model1</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">datos1</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">key</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">or</span> <span class="n">key</span> <span class="o">==</span> <span class="mi">4</span><span class="p">:</span>
+                        <span class="n">query</span> <span class="o">=</span> <span class="s2">&quot;update produtos set </span><span class="si">%s</span><span class="s2">=&#39;</span><span class="si">%s</span><span class="s2">&#39; where id=</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span>
+                            <span class="n">model1</span><span class="p">[</span><span class="n">key</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">datos1</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">datos1</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="mi">1</span><span class="p">])</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
+
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">query</span> <span class="o">=</span> <span class="s2">&quot;update produtos set </span><span class="si">%s</span><span class="s2">=</span><span class="si">%s</span><span class="s2"> where id=</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span>
+                            <span class="n">model1</span><span class="p">[</span><span class="n">key</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">datos1</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">datos1</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="mi">1</span><span class="p">])</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">modelo</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">select_produtos</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">datos2</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">model2</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">datos2</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">key</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+                        <span class="n">query</span> <span class="o">=</span> <span class="s2">&quot;update servizos set </span><span class="si">%s</span><span class="s2">=</span><span class="si">%s</span><span class="s2"> where id=</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span>
+                            <span class="n">model2</span><span class="p">[</span><span class="n">key</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">datos2</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">datos2</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="mi">1</span><span class="p">])</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">query</span> <span class="o">=</span> <span class="s2">&quot;update servizos set </span><span class="si">%s</span><span class="s2">=&#39;</span><span class="si">%s</span><span class="s2">&#39; where id=</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span>
+                            <span class="n">model2</span><span class="p">[</span><span class="n">key</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">datos2</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">datos2</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="mi">1</span><span class="p">])</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">modelo2</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">select_servizos</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">conn</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">conn</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">connFlag</span> <span class="o">=</span> <span class="kc">False</span></div>
+
+<div class="viewcode-block" id="VentaServizos.on_bXerarInforme_clicked"><a class="viewcode-back" href="../documentacion.html#PDI_produtosServizos.VentaServizos.on_bXerarInforme_clicked">[documentos]</a>    <span class="k">def</span> <span class="nf">on_bXerarInforme_clicked</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">widget</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Función que se executa ao facer clic no botón &quot;xerar informe final&quot;. Crea un arquivo en formato PDF que inserta</span>
+<span class="sd">        as diferentes gráficas xeradas a partir da base de datos</span>
+
+<span class="sd">        :param widget:</span>
+<span class="sd">        :return:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">now</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">check_connection</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">doc</span> <span class="o">=</span> <span class="n">SimpleDocTemplate</span><span class="p">(</span><span class="s2">&quot;informe_</span><span class="si">%s</span><span class="s2">-</span><span class="si">%s</span><span class="s2">-</span><span class="si">%s</span><span class="s2">.pdf&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">now</span><span class="o">.</span><span class="n">day</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">now</span><span class="o">.</span><span class="n">month</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">now</span><span class="o">.</span><span class="n">year</span><span class="p">),</span>
+                                     <span class="n">pagesize</span><span class="o">=</span><span class="n">A4</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">xerar_taboa_prods</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">xerar_pieChart_serv</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">xerar_barChart_serv</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">doc</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">story</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="VentaServizos.xerar_taboa_prods"><a class="viewcode-back" href="../documentacion.html#PDI_produtosServizos.VentaServizos.xerar_taboa_prods">[documentos]</a>    <span class="k">def</span> <span class="nf">xerar_taboa_prods</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Xera unha táboa cos 10 produtos máis vendidos e con stock pendente de renovar cos datos obtidos da base de datos</span>
+
+<span class="sd">        :return:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">styles</span> <span class="o">=</span> <span class="n">getSampleStyleSheet</span><span class="p">()</span>
+
+        <span class="n">ptext</span> <span class="o">=</span> <span class="n">Paragraph</span><span class="p">(</span><span class="s1">&#39;Informe de empresa con data </span><span class="si">%s</span><span class="s1">-</span><span class="si">%s</span><span class="s1">-</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">now</span><span class="o">.</span><span class="n">day</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">now</span><span class="o">.</span><span class="n">month</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">now</span><span class="o">.</span><span class="n">year</span><span class="p">),</span>
+                          <span class="n">styles</span><span class="p">[</span><span class="s1">&#39;title&#39;</span><span class="p">])</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">story</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ptext</span><span class="p">)</span>
+
+        <span class="n">ptext</span> <span class="o">=</span> <span class="n">Paragraph</span><span class="p">(</span><span class="s1">&#39;Lista dos 10 produtos máis vendidos:&#39;</span><span class="p">,</span> <span class="n">styles</span><span class="p">[</span><span class="s1">&#39;Heading1&#39;</span><span class="p">])</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">story</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ptext</span><span class="p">)</span>
+
+        <span class="n">tabp1</span> <span class="o">=</span> <span class="n">Table</span><span class="p">([[</span><span class="s1">&#39;ID&#39;</span><span class="p">,</span> <span class="s1">&#39;Nome&#39;</span><span class="p">,</span> <span class="s1">&#39;Nº de vendas&#39;</span><span class="p">]],</span> <span class="n">colWidths</span><span class="o">=</span><span class="mi">80</span><span class="p">,</span> <span class="n">rowHeights</span><span class="o">=</span><span class="mi">30</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">story</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">tabp1</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;select id, nom_prod, nvendas from produtos order by nvendas desc limit 10&quot;</span><span class="p">):</span>
+            <span class="n">t</span> <span class="o">=</span> <span class="n">Table</span><span class="p">([</span>
+                <span class="p">[</span><span class="n">row</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">row</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">row</span><span class="p">[</span><span class="mi">2</span><span class="p">]],</span>
+            <span class="p">],</span> <span class="n">colWidths</span><span class="o">=</span><span class="mi">80</span><span class="p">,</span> <span class="n">rowHeights</span><span class="o">=</span><span class="mi">30</span><span class="p">)</span>
+
+            <span class="n">tabp1</span><span class="o">.</span><span class="n">setStyle</span><span class="p">([</span>
+                <span class="p">(</span><span class="s1">&#39;BOX&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">),</span> <span class="mi">2</span><span class="p">,</span> <span class="n">colors</span><span class="o">.</span><span class="n">black</span><span class="p">),</span>
+                <span class="p">(</span><span class="s1">&#39;BACKGROUND&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="n">colors</span><span class="o">.</span><span class="n">pink</span><span class="p">),</span>
+            <span class="p">])</span>
+
+            <span class="n">t</span><span class="o">.</span><span class="n">setStyle</span><span class="p">([</span>
+                <span class="p">(</span><span class="s1">&#39;TEXTCOLOR&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">),</span> <span class="n">colors</span><span class="o">.</span><span class="n">purple</span><span class="p">),</span>
+                <span class="p">(</span><span class="s1">&#39;TEXTCOLOR&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">),</span> <span class="n">colors</span><span class="o">.</span><span class="n">darkblue</span><span class="p">),</span>
+                <span class="p">(</span><span class="s1">&#39;BACKGROUND&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">),</span> <span class="n">colors</span><span class="o">.</span><span class="n">white</span><span class="p">),</span>
+                <span class="p">(</span><span class="s1">&#39;BOX&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">),</span> <span class="mi">2</span><span class="p">,</span> <span class="n">colors</span><span class="o">.</span><span class="n">black</span><span class="p">)</span>
+            <span class="p">])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">story</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">story</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Spacer</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">15</span><span class="p">))</span>
+
+        <span class="n">ptext</span> <span class="o">=</span> <span class="n">Paragraph</span><span class="p">(</span><span class="s1">&#39;Produtos con stock pendente de renovar:&#39;</span><span class="p">,</span> <span class="n">styles</span><span class="p">[</span><span class="s1">&#39;Heading1&#39;</span><span class="p">])</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">story</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ptext</span><span class="p">)</span>
+
+        <span class="n">tabp2</span> <span class="o">=</span> <span class="n">Table</span><span class="p">([[</span><span class="s1">&#39;ID&#39;</span><span class="p">,</span> <span class="s1">&#39;Nome&#39;</span><span class="p">,</span> <span class="s1">&#39;Stock&#39;</span><span class="p">]],</span> <span class="n">colWidths</span><span class="o">=</span><span class="mi">80</span><span class="p">,</span> <span class="n">rowHeights</span><span class="o">=</span><span class="mi">30</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">story</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">tabp2</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;select id, nom_prod, stock from produtos where stock &lt; 16&quot;</span><span class="p">):</span>
+            <span class="n">t</span> <span class="o">=</span> <span class="n">Table</span><span class="p">([</span>
+                <span class="p">[</span><span class="n">row</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">row</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">row</span><span class="p">[</span><span class="mi">2</span><span class="p">]],</span>
+            <span class="p">],</span> <span class="n">colWidths</span><span class="o">=</span><span class="mi">80</span><span class="p">,</span> <span class="n">rowHeights</span><span class="o">=</span><span class="mi">30</span><span class="p">)</span>
+
+            <span class="n">tabp2</span><span class="o">.</span><span class="n">setStyle</span><span class="p">([</span>
+                <span class="p">(</span><span class="s1">&#39;BOX&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">),</span> <span class="mi">2</span><span class="p">,</span> <span class="n">colors</span><span class="o">.</span><span class="n">black</span><span class="p">),</span>
+                <span class="p">(</span><span class="s1">&#39;BACKGROUND&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="n">colors</span><span class="o">.</span><span class="n">lightgreen</span><span class="p">),</span>
+            <span class="p">])</span>
+
+            <span class="n">t</span><span class="o">.</span><span class="n">setStyle</span><span class="p">([</span>
+                <span class="p">(</span><span class="s1">&#39;TEXTCOLOR&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">),</span> <span class="n">colors</span><span class="o">.</span><span class="n">purple</span><span class="p">),</span>
+                <span class="p">(</span><span class="s1">&#39;TEXTCOLOR&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">),</span> <span class="n">colors</span><span class="o">.</span><span class="n">darkblue</span><span class="p">),</span>
+                <span class="p">(</span><span class="s1">&#39;BACKGROUND&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">),</span> <span class="n">colors</span><span class="o">.</span><span class="n">white</span><span class="p">),</span>
+                <span class="p">(</span><span class="s1">&#39;BOX&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">),</span> <span class="mi">2</span><span class="p">,</span> <span class="n">colors</span><span class="o">.</span><span class="n">black</span><span class="p">)</span>
+            <span class="p">])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">story</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">story</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Spacer</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">55</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="VentaServizos.xerar_pieChart_serv"><a class="viewcode-back" href="../documentacion.html#PDI_produtosServizos.VentaServizos.xerar_pieChart_serv">[documentos]</a>    <span class="k">def</span> <span class="nf">xerar_pieChart_serv</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Xera unha gráfica circular co número de empregados por servizo, obtidos da base de datos</span>
+
+<span class="sd">        :return:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">from</span> <span class="nn">reportlab.graphics.charts.piecharts</span> <span class="k">import</span> <span class="n">Pie</span>
+        <span class="kn">from</span> <span class="nn">reportlab.graphics.charts.legends</span> <span class="k">import</span> <span class="n">Legend</span>
+
+        <span class="n">styles</span> <span class="o">=</span> <span class="n">getSampleStyleSheet</span><span class="p">()</span>
+
+        <span class="n">ptext</span> <span class="o">=</span> <span class="n">Paragraph</span><span class="p">(</span><span class="s1">&#39;Número de empregados por tipo de servizo:&#39;</span><span class="p">,</span> <span class="n">styles</span><span class="p">[</span><span class="s1">&#39;Heading1&#39;</span><span class="p">])</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">story</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ptext</span><span class="p">)</span>
+
+        <span class="n">d</span> <span class="o">=</span> <span class="n">Drawing</span><span class="p">(</span><span class="mi">300</span><span class="p">,</span> <span class="mi">200</span><span class="p">)</span>
+        <span class="n">pc</span> <span class="o">=</span> <span class="n">Pie</span><span class="p">()</span>
+        <span class="n">pc</span><span class="o">.</span><span class="n">x</span> <span class="o">=</span> <span class="mi">65</span>
+        <span class="n">pc</span><span class="o">.</span><span class="n">y</span> <span class="o">=</span> <span class="mi">12</span>
+        <span class="n">pc</span><span class="o">.</span><span class="n">width</span> <span class="o">=</span> <span class="mi">170</span>
+        <span class="n">pc</span><span class="o">.</span><span class="n">height</span> <span class="o">=</span> <span class="mi">170</span>
+
+        <span class="n">pc</span><span class="o">.</span><span class="n">labels</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Mantemento&#39;</span><span class="p">,</span> <span class="s1">&#39;Administración&#39;</span><span class="p">,</span> <span class="s1">&#39;Investigación de mercados&#39;</span><span class="p">,</span> <span class="s1">&#39;Contabilidade&#39;</span><span class="p">,</span> <span class="s1">&#39;Programación&#39;</span><span class="p">,</span>
+                     <span class="s1">&#39;Vendas&#39;</span><span class="p">,</span> <span class="s1">&#39;Soporte técnico&#39;</span><span class="p">,</span> <span class="s1">&#39;Desarrollo&#39;</span><span class="p">,</span> <span class="s1">&#39;Distribución&#39;</span><span class="p">,</span> <span class="s1">&#39;Dirección de empresas&#39;</span><span class="p">,</span>
+                     <span class="s1">&#39;Recursos humanos&#39;</span><span class="p">]</span>
+
+        <span class="n">pc</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="p">[</span><span class="n">row</span> <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;SELECT (SELECT nempregados FROM servizos WHERE (nom_serv = &#39;mantemento&#39;)) AS man,</span>
+<span class="s2">        (SELECT nempregados FROM servizos WHERE (nom_serv = &#39;administracion&#39;)) AS adm,</span>
+<span class="s2">        (SELECT nempregados FROM servizos WHERE (nom_serv = &#39;investigacion de mercados&#39;)) AS inv,</span>
+<span class="s2">        (SELECT nempregados FROM servizos WHERE (nom_serv = &#39;contabilidade&#39;)) AS cont,</span>
+<span class="s2">        (SELECT nempregados FROM servizos WHERE (nom_serv = &#39;programacion&#39;)) AS prog,</span>
+<span class="s2">        (SELECT nempregados FROM servizos WHERE (nom_serv = &#39;vendas&#39;)) AS vendas,</span>
+<span class="s2">        (SELECT nempregados FROM servizos WHERE (nom_serv = &#39;soporte tecnico&#39;)) AS sop,</span>
+<span class="s2">        (SELECT nempregados FROM servizos WHERE (nom_serv = &#39;desarrollo&#39;)) AS des,</span>
+<span class="s2">        (SELECT nempregados FROM servizos WHERE (nom_serv = &#39;distribucion&#39;)) AS dist,</span>
+<span class="s2">        (SELECT nempregados FROM servizos WHERE (nom_serv = &#39;direccion de empresas&#39;)) AS dir,</span>
+<span class="s2">        (SELECT nempregados FROM servizos WHERE (nom_serv = &#39;recursos humanos&#39;)) FROM servizos AS rh</span>
+<span class="s2">        &quot;&quot;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">fetchone</span><span class="p">()]</span>
+
+        <span class="n">pc</span><span class="o">.</span><span class="n">slices</span><span class="o">.</span><span class="n">strokeWidth</span> <span class="o">=</span> <span class="mf">0.5</span>
+
+        <span class="n">pc</span><span class="o">.</span><span class="n">slices</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">popout</span> <span class="o">=</span> <span class="mi">10</span>
+        <span class="n">pc</span><span class="o">.</span><span class="n">slices</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">strokeWidth</span> <span class="o">=</span> <span class="mi">2</span>
+        <span class="n">pc</span><span class="o">.</span><span class="n">slices</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">strokeDashArray</span> <span class="o">=</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span>
+        <span class="n">pc</span><span class="o">.</span><span class="n">slices</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">labelRadius</span> <span class="o">=</span> <span class="mf">1.75</span>
+        <span class="n">pc</span><span class="o">.</span><span class="n">slices</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">fontColor</span> <span class="o">=</span> <span class="n">colors</span><span class="o">.</span><span class="n">purple</span>
+
+        <span class="n">pc</span><span class="o">.</span><span class="n">sideLabels</span> <span class="o">=</span> <span class="mi">1</span>  <span class="c1"># Con 0 no se muestran líneas hacia las etiquetas</span>
+        <span class="c1"># Insertamos la leyenda</span>
+
+        <span class="n">legend</span> <span class="o">=</span> <span class="n">Legend</span><span class="p">()</span>
+        <span class="n">legend</span><span class="o">.</span><span class="n">x</span> <span class="o">=</span> <span class="mi">370</span>
+        <span class="n">legend</span><span class="o">.</span><span class="n">y</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">legend</span><span class="o">.</span><span class="n">dx</span> <span class="o">=</span> <span class="mi">8</span>
+        <span class="n">legend</span><span class="o">.</span><span class="n">dy</span> <span class="o">=</span> <span class="mi">8</span>
+        <span class="n">legend</span><span class="o">.</span><span class="n">fontName</span> <span class="o">=</span> <span class="s1">&#39;Helvetica&#39;</span>
+        <span class="n">legend</span><span class="o">.</span><span class="n">fontSize</span> <span class="o">=</span> <span class="mi">7</span>
+        <span class="n">legend</span><span class="o">.</span><span class="n">boxAnchor</span> <span class="o">=</span> <span class="s1">&#39;n&#39;</span>
+        <span class="n">legend</span><span class="o">.</span><span class="n">columnMaximum</span> <span class="o">=</span> <span class="mi">10</span>
+        <span class="n">legend</span><span class="o">.</span><span class="n">strokeWidth</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="n">legend</span><span class="o">.</span><span class="n">strokeColor</span> <span class="o">=</span> <span class="n">colors</span><span class="o">.</span><span class="n">black</span>
+        <span class="n">legend</span><span class="o">.</span><span class="n">deltax</span> <span class="o">=</span> <span class="mi">75</span>
+        <span class="n">legend</span><span class="o">.</span><span class="n">deltay</span> <span class="o">=</span> <span class="mi">10</span>
+        <span class="n">legend</span><span class="o">.</span><span class="n">autoXPadding</span> <span class="o">=</span> <span class="mi">5</span>
+        <span class="n">legend</span><span class="o">.</span><span class="n">yGap</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">legend</span><span class="o">.</span><span class="n">dxTextSpace</span> <span class="o">=</span> <span class="mi">5</span>
+        <span class="n">legend</span><span class="o">.</span><span class="n">alignment</span> <span class="o">=</span> <span class="s1">&#39;right&#39;</span>
+        <span class="n">legend</span><span class="o">.</span><span class="n">dividerLines</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">|</span> <span class="mi">2</span> <span class="o">|</span> <span class="mi">4</span>
+        <span class="n">legend</span><span class="o">.</span><span class="n">dividerOffsY</span> <span class="o">=</span> <span class="mf">4.5</span>
+        <span class="n">legend</span><span class="o">.</span><span class="n">subCols</span><span class="o">.</span><span class="n">rpad</span> <span class="o">=</span> <span class="mi">30</span>
+
+        <span class="c1"># Insertemos nuestros propios colores</span>
+        <span class="n">colores</span> <span class="o">=</span> <span class="p">[</span><span class="n">colors</span><span class="o">.</span><span class="n">darkblue</span><span class="p">,</span> <span class="n">colors</span><span class="o">.</span><span class="n">cyan</span><span class="p">,</span> <span class="n">colors</span><span class="o">.</span><span class="n">purple</span><span class="p">,</span> <span class="n">colors</span><span class="o">.</span><span class="n">magenta</span><span class="p">,</span> <span class="n">colors</span><span class="o">.</span><span class="n">pink</span><span class="p">,</span> <span class="n">colors</span><span class="o">.</span><span class="n">lightgreen</span><span class="p">,</span>
+                   <span class="n">colors</span><span class="o">.</span><span class="n">coral</span><span class="p">,</span> <span class="n">colors</span><span class="o">.</span><span class="n">crimson</span><span class="p">,</span>
+                   <span class="n">colors</span><span class="o">.</span><span class="n">darkgreen</span><span class="p">,</span> <span class="n">colors</span><span class="o">.</span><span class="n">darkorange</span><span class="p">,</span> <span class="n">colors</span><span class="o">.</span><span class="n">lavender</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">color</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">colores</span><span class="p">):</span>
+            <span class="n">pc</span><span class="o">.</span><span class="n">slices</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">fillColor</span> <span class="o">=</span> <span class="n">color</span>
+
+        <span class="n">legend</span><span class="o">.</span><span class="n">colorNamePairs</span> <span class="o">=</span> <span class="p">[(</span>
+            <span class="n">pc</span><span class="o">.</span><span class="n">slices</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">fillColor</span><span class="p">,</span>
+            <span class="p">(</span><span class="n">pc</span><span class="o">.</span><span class="n">labels</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">0</span><span class="p">:</span><span class="mi">20</span><span class="p">],</span> <span class="s1">&#39;</span><span class="si">%0.2f</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">pc</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+        <span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">pc</span><span class="o">.</span><span class="n">data</span><span class="p">))]</span>
+
+        <span class="n">d</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">pc</span><span class="p">)</span>
+        <span class="n">d</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">legend</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">story</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">story</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Spacer</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">110</span><span class="p">))</span></div>
+        <span class="c1"># self.doc.build(self.story)</span>
+
+<div class="viewcode-block" id="VentaServizos.xerar_barChart_serv"><a class="viewcode-back" href="../documentacion.html#PDI_produtosServizos.VentaServizos.xerar_barChart_serv">[documentos]</a>    <span class="k">def</span> <span class="nf">xerar_barChart_serv</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Xera un gráfico de barras co número de empregados por departamento nos últimos 8 meses a partir da base de datos</span>
+
+<span class="sd">        :return:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">from</span> <span class="nn">reportlab.graphics.charts.barcharts</span> <span class="k">import</span> <span class="n">VerticalBarChart</span>
+
+        <span class="n">styles</span> <span class="o">=</span> <span class="n">getSampleStyleSheet</span><span class="p">()</span>
+
+        <span class="n">ptext</span> <span class="o">=</span> <span class="n">Paragraph</span><span class="p">(</span><span class="s1">&#39;Número de empregados por departamento nos últimos 8 meses:&#39;</span><span class="p">,</span> <span class="n">styles</span><span class="p">[</span><span class="s1">&#39;Heading1&#39;</span><span class="p">])</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">story</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ptext</span><span class="p">)</span>
+
+        <span class="n">d</span> <span class="o">=</span> <span class="n">Drawing</span><span class="p">(</span><span class="mi">400</span><span class="p">,</span> <span class="mi">200</span><span class="p">)</span>
+
+        <span class="n">p</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;SELECT (SELECT SUM(nempregados) FROM servizos WHERE (departamento = &#39;produccion&#39;)) AS prod, </span>
+<span class="s2">        (SELECT SUM(nempregados) FROM servizos WHERE (departamento = &#39;finanzas&#39;)) AS finanzas,</span>
+<span class="s2">        (SELECT SUM(nempregados) FROM servizos WHERE (departamento = &#39;informatica&#39;)) AS informatica,</span>
+<span class="s2">         (SELECT SUM(nempregados) FROM servizos WHERE (departamento = &#39;publicidade&#39;)) FROM servizos AS publicidade</span>
+<span class="s2">        &quot;&quot;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">fetchone</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">conn</span><span class="o">.</span><span class="n">text_factory</span> <span class="o">=</span> <span class="nb">str</span>
+
+        <span class="n">data</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="p">(</span><span class="mi">25</span><span class="p">,</span> <span class="mi">34</span><span class="p">,</span> <span class="mi">14</span><span class="p">,</span> <span class="mi">18</span><span class="p">,</span> <span class="mi">36</span><span class="p">,</span> <span class="mi">22</span><span class="p">,</span> <span class="mi">19</span><span class="p">,</span> <span class="n">p</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span>
+            <span class="p">(</span><span class="mi">26</span><span class="p">,</span> <span class="mi">31</span><span class="p">,</span> <span class="mi">22</span><span class="p">,</span> <span class="mi">24</span><span class="p">,</span> <span class="mi">16</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">18</span><span class="p">,</span> <span class="n">p</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span>
+            <span class="p">(</span><span class="mi">34</span><span class="p">,</span> <span class="mi">40</span><span class="p">,</span> <span class="mi">18</span><span class="p">,</span> <span class="mi">9</span><span class="p">,</span> <span class="mi">25</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">p</span><span class="p">[</span><span class="mi">2</span><span class="p">]),</span>
+            <span class="p">(</span><span class="mi">29</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">19</span><span class="p">,</span> <span class="mi">16</span><span class="p">,</span> <span class="mi">34</span><span class="p">,</span> <span class="mi">40</span><span class="p">,</span> <span class="mi">15</span><span class="p">,</span> <span class="n">p</span><span class="p">[</span><span class="mi">3</span><span class="p">])</span>
+        <span class="p">]</span>
+
+        <span class="n">bc</span> <span class="o">=</span> <span class="n">VerticalBarChart</span><span class="p">()</span>
+        <span class="n">bc</span><span class="o">.</span><span class="n">x</span> <span class="o">=</span> <span class="mi">50</span>
+        <span class="n">bc</span><span class="o">.</span><span class="n">y</span> <span class="o">=</span> <span class="mi">55</span>
+        <span class="n">bc</span><span class="o">.</span><span class="n">height</span> <span class="o">=</span> <span class="mi">125</span>
+        <span class="n">bc</span><span class="o">.</span><span class="n">width</span> <span class="o">=</span> <span class="mi">300</span>
+        <span class="n">bc</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">data</span>
+        <span class="n">bc</span><span class="o">.</span><span class="n">strokeColor</span> <span class="o">=</span> <span class="n">colors</span><span class="o">.</span><span class="n">black</span>
+        <span class="n">bc</span><span class="o">.</span><span class="n">valueAxis</span><span class="o">.</span><span class="n">valueMin</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">bc</span><span class="o">.</span><span class="n">valueAxis</span><span class="o">.</span><span class="n">valueMax</span> <span class="o">=</span> <span class="mi">50</span>
+        <span class="n">bc</span><span class="o">.</span><span class="n">valueAxis</span><span class="o">.</span><span class="n">valueStep</span> <span class="o">=</span> <span class="mi">10</span>  <span class="c1"># paso de distancia entre punto y punto</span>
+        <span class="n">bc</span><span class="o">.</span><span class="n">categoryAxis</span><span class="o">.</span><span class="n">labels</span><span class="o">.</span><span class="n">boxAnchor</span> <span class="o">=</span> <span class="s1">&#39;ne&#39;</span>
+        <span class="n">bc</span><span class="o">.</span><span class="n">categoryAxis</span><span class="o">.</span><span class="n">labels</span><span class="o">.</span><span class="n">dx</span> <span class="o">=</span> <span class="mi">8</span>
+        <span class="n">bc</span><span class="o">.</span><span class="n">categoryAxis</span><span class="o">.</span><span class="n">labels</span><span class="o">.</span><span class="n">dy</span> <span class="o">=</span> <span class="o">-</span><span class="mi">2</span>
+        <span class="n">bc</span><span class="o">.</span><span class="n">categoryAxis</span><span class="o">.</span><span class="n">labels</span><span class="o">.</span><span class="n">angle</span> <span class="o">=</span> <span class="mi">30</span>
+        <span class="n">bc</span><span class="o">.</span><span class="n">categoryAxis</span><span class="o">.</span><span class="n">categoryNames</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Xan-19&#39;</span><span class="p">,</span> <span class="s1">&#39;Feb-19&#39;</span><span class="p">,</span> <span class="s1">&#39;Mar-19&#39;</span><span class="p">,</span>
+                                         <span class="s1">&#39;Abr-19&#39;</span><span class="p">,</span> <span class="s1">&#39;Mai-19&#39;</span><span class="p">,</span> <span class="s1">&#39;Xuñ-19&#39;</span><span class="p">,</span>
+                                         <span class="s1">&#39;Xul-19&#39;</span><span class="p">,</span> <span class="s1">&#39;Ago-19&#39;</span><span class="p">]</span>
+        <span class="n">bc</span><span class="o">.</span><span class="n">groupSpacing</span> <span class="o">=</span> <span class="mi">10</span>
+        <span class="n">bc</span><span class="o">.</span><span class="n">barSpacing</span> <span class="o">=</span> <span class="mi">2</span>
+        <span class="c1"># bc.categoryAxis.style = &#39;stacked&#39;  # Una variación del gráfico</span>
+        <span class="n">d</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">bc</span><span class="p">)</span>
+        <span class="c1"># pprint.pprint(bc.getProperties())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">story</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">d</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="VentaServizos.on_bVoltar_clicked"><a class="viewcode-back" href="../documentacion.html#PDI_produtosServizos.VentaServizos.on_bVoltar_clicked">[documentos]</a>    <span class="k">def</span> <span class="nf">on_bVoltar_clicked</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">widget</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Función que se executa ao pulsar o botón de &quot;Voltar ao menú&quot;. Se a base de datos está conectada, a desconecta e</span>
+<span class="sd">        pecha a ventá actual.</span>
+
+<span class="sd">        :param widget:</span>
+<span class="sd">        :return:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">connFlag</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">conn</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">destroy</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="VentaServizos.text_edited"><a class="viewcode-back" href="../documentacion.html#PDI_produtosServizos.VentaServizos.text_edited">[documentos]</a>    <span class="k">def</span> <span class="nf">text_edited</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="n">new_text</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">column</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Execútase cada vez que se edita unha fila do treeview, para que non se eliminen os cambios cada vez que cambiamos</span>
+<span class="sd">        de fila. Como a listore contén tipos de datos distintos, fai un casting para que non salte unha excepción de tipo</span>
+<span class="sd">        int, string... Se o listore editado é dun tipo concreto almacenase nun diccionario ou noutro para a súa posterior</span>
+<span class="sd">        manipulación.</span>
+
+<span class="sd">        :param w:</span>
+<span class="sd">        :param row: fila editada</span>
+<span class="sd">        :param new_text: texto editado</span>
+<span class="sd">        :param model: listore editado</span>
+<span class="sd">        :param column: columna editada</span>
+<span class="sd">        :return:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">tipo</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="n">model</span><span class="p">[</span><span class="n">row</span><span class="p">][</span><span class="n">column</span><span class="p">])</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">model</span><span class="p">[</span><span class="n">row</span><span class="p">][</span><span class="n">column</span><span class="p">],</span> <span class="n">tipo</span><span class="p">):</span>
+                <span class="n">model</span><span class="p">[</span><span class="n">row</span><span class="p">][</span><span class="n">column</span><span class="p">]</span> <span class="o">=</span> <span class="n">tipo</span><span class="p">(</span><span class="n">new_text</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+            <span class="sd">&quot;&quot;&quot;Tipo de valor invalido&quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="n">model</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">modelo</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">datos1</span><span class="p">[</span><span class="n">column</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">model</span><span class="p">[</span><span class="n">row</span><span class="p">][</span><span class="n">column</span><span class="p">],</span> <span class="n">model</span><span class="p">[</span><span class="n">row</span><span class="p">][</span><span class="mi">0</span><span class="p">]]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">datos2</span><span class="p">[</span><span class="n">column</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">model</span><span class="p">[</span><span class="n">row</span><span class="p">][</span><span class="n">column</span><span class="p">],</span> <span class="n">model</span><span class="p">[</span><span class="n">row</span><span class="p">][</span><span class="mi">0</span><span class="p">]]</span></div>
+
+<div class="viewcode-block" id="VentaServizos.color_activated"><a class="viewcode-back" href="../documentacion.html#PDI_produtosServizos.VentaServizos.color_activated">[documentos]</a>    <span class="k">def</span> <span class="nf">color_activated</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Método que se executa ao facer doble nunha columna non editable, como o id, ou o color. Neste caso cambia</span>
+<span class="sd">        o cor mostrado na táboa na base de datos, abrindo un cadro de diálogo para escoller un cor e devolve o seu</span>
+<span class="sd">        código hexadecimal</span>
+
+<span class="sd">        :return:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">color</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">colorchooserdialog</span><span class="o">.</span><span class="n">get_rgba</span><span class="p">()</span>
+
+        <span class="n">red</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">color</span><span class="o">.</span><span class="n">red</span> <span class="o">*</span> <span class="mi">255</span><span class="p">)</span>
+        <span class="n">green</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">color</span><span class="o">.</span><span class="n">green</span> <span class="o">*</span> <span class="mi">255</span><span class="p">)</span>
+        <span class="n">blue</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">color</span><span class="o">.</span><span class="n">blue</span> <span class="o">*</span> <span class="mi">255</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="s1">&#39;#</span><span class="si">%02x%02x%02x</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">red</span><span class="p">,</span> <span class="n">green</span><span class="p">,</span> <span class="n">blue</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="VentaServizos.on_row_activated"><a class="viewcode-back" href="../documentacion.html#PDI_produtosServizos.VentaServizos.on_row_activated">[documentos]</a>    <span class="k">def</span> <span class="nf">on_row_activated</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">widget</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="n">col</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Método que modifica o cor seleccionado polo usuario na base de datos</span>
+
+<span class="sd">        :param widget:</span>
+<span class="sd">        :param row:</span>
+<span class="sd">        :param col:</span>
+<span class="sd">        :return:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">model</span> <span class="o">=</span> <span class="n">widget</span><span class="o">.</span><span class="n">get_model</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">colorchooserdialog</span> <span class="o">=</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">ColorChooserDialog</span><span class="p">(</span><span class="n">parent</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">colorchooserdialog</span><span class="o">.</span><span class="n">run</span><span class="p">()</span> <span class="o">==</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">ResponseType</span><span class="o">.</span><span class="n">OK</span><span class="p">:</span>
+            <span class="n">model</span><span class="p">[</span><span class="n">row</span><span class="p">][</span><span class="mi">4</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">color_activated</span><span class="p">())</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">datos1</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">model</span><span class="p">[</span><span class="n">row</span><span class="p">][</span><span class="mi">4</span><span class="p">],</span> <span class="n">model</span><span class="p">[</span><span class="n">row</span><span class="p">][</span><span class="mi">0</span><span class="p">]]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">colorchooserdialog</span><span class="o">.</span><span class="n">destroy</span><span class="p">()</span></div></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="index.html">Código de módulo</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Búsqueda rápida</h3>
+    <form class="search" action="../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Ir a" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2020, Alba Perez Cesar.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.7</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.8</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

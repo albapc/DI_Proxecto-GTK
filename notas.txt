@@ -1,0 +1,3 @@
+Compatible co sistema operativo de Ubuntu.
+Interfaz gráfica: Gtk3
+Programado en: Python 3

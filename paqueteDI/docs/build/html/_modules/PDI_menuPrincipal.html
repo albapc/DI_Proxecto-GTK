@@ -1,0 +1,198 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="es">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>PDI_menuPrincipal &#8212; documentación de ProxectoDI - 0.0.1</title>
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/translations.js"></script>
+    <link rel="index" title="Índice" href="../genindex.html" />
+    <link rel="search" title="Búsqueda" href="../search.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Código fuente para PDI_menuPrincipal</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">PDI_menuPrincipal.py</span>
+<span class="sd">====================================</span>
+<span class="sd">Arquivo que contén a interfaz do menú principal</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">gi</span>
+
+<span class="n">gi</span><span class="o">.</span><span class="n">require_version</span><span class="p">(</span><span class="s1">&#39;Gtk&#39;</span><span class="p">,</span> <span class="s1">&#39;3.0&#39;</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">gi.repository</span> <span class="k">import</span> <span class="n">Gtk</span>
+
+
+<div class="viewcode-block" id="Venta"><a class="viewcode-back" href="../documentacion.html#PDI_menuPrincipal.Venta">[documentos]</a><span class="k">class</span> <span class="nc">Venta</span><span class="p">(</span><span class="n">Gtk</span><span class="o">.</span><span class="n">Window</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Clase que conten as funcións do menú principal e os seus elementos</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Función que contén os elementos do menú principal: botóns, etiquetas...</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">Gtk</span><span class="o">.</span><span class="n">Window</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Menú principal&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_default_size</span><span class="p">(</span><span class="mi">500</span><span class="p">,</span> <span class="mi">200</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">box</span> <span class="o">=</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">Box</span><span class="p">(</span><span class="n">orientation</span><span class="o">=</span><span class="n">Gtk</span><span class="o">.</span><span class="n">Orientation</span><span class="o">.</span><span class="n">VERTICAL</span><span class="p">,</span> <span class="n">spacing</span><span class="o">=</span><span class="mi">6</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">box</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">labelBenvida</span> <span class="o">=</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">Label</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">labelBenvida</span><span class="o">.</span><span class="n">set_markup</span><span class="p">(</span><span class="s2">&quot;&lt;b&gt;Benvido/a:&lt;/b&gt;&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">box</span><span class="o">.</span><span class="n">pack_start</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">labelBenvida</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">bXestion</span> <span class="o">=</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">Button</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s2">&quot;Xestión de clientes&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bXestion</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s2">&quot;clicked&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">on_bXestion_clicked</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">box</span><span class="o">.</span><span class="n">pack_start</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bXestion</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">bProdutos</span> <span class="o">=</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">Button</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s2">&quot;Produtos/Servizos&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bProdutos</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s2">&quot;clicked&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">on_bProdutos_clicked</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">box</span><span class="o">.</span><span class="n">pack_start</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bProdutos</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">bSair</span> <span class="o">=</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">Button</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s2">&quot;Saír&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bSair</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s2">&quot;clicked&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">on_bSair_clicked</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">box</span><span class="o">.</span><span class="n">pack_start</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bSair</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Venta.on_bXestion_clicked"><a class="viewcode-back" href="../documentacion.html#PDI_menuPrincipal.Venta.on_bXestion_clicked">[documentos]</a>    <span class="k">def</span> <span class="nf">on_bXestion_clicked</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">widget</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Función que se executa ao facer clic no botón &quot;Xestión de clientes&quot;. Importa outro arquivo e crea unha</span>
+<span class="sd">        ventá a partir deste e conecta a esta ventá nova o eventos de peche para que volva a abrir o menú principal</span>
+
+<span class="sd">        :param widget: manexa o control de eventos ao facer clic no boton</span>
+<span class="sd">        :return:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">from</span> <span class="nn">paqueteDI.PDI_xestionClientes</span> <span class="k">import</span> <span class="n">VentaClientes</span>
+        <span class="k">global</span> <span class="n">win</span>
+        <span class="n">vclientes</span> <span class="o">=</span> <span class="n">VentaClientes</span><span class="p">()</span>
+        <span class="n">vclientes</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s1">&#39;delete-event&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">on_destroy</span><span class="p">)</span>
+        <span class="n">vclientes</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s1">&#39;destroy&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">on_destroy</span><span class="p">)</span>
+        <span class="n">vclientes</span><span class="o">.</span><span class="n">show_all</span><span class="p">()</span>
+        <span class="n">win</span><span class="o">.</span><span class="n">hide</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Venta.on_bProdutos_clicked"><a class="viewcode-back" href="../documentacion.html#PDI_menuPrincipal.Venta.on_bProdutos_clicked">[documentos]</a>    <span class="k">def</span> <span class="nf">on_bProdutos_clicked</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">widget</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Función que se executa ao facer clic no botón &quot;Produtos/Servizos&quot;. Importa o arquivo da ventá de servizos</span>
+<span class="sd">        e oculta o menú principal. Se se pecha a ventá de servizos, volve a mostrar a principal</span>
+
+<span class="sd">        :param widget: manexa o control de eventos ao facer clic no boton</span>
+<span class="sd">        :return:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">from</span> <span class="nn">paqueteDI.PDI_produtosServizos</span> <span class="k">import</span> <span class="n">VentaServizos</span>
+        <span class="k">global</span> <span class="n">win</span>
+        <span class="n">vservizos</span> <span class="o">=</span> <span class="n">VentaServizos</span><span class="p">()</span>
+        <span class="n">vservizos</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s1">&#39;delete-event&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">on_destroy</span><span class="p">)</span>
+        <span class="n">vservizos</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s1">&#39;destroy&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">on_destroy</span><span class="p">)</span>
+        <span class="n">vservizos</span><span class="o">.</span><span class="n">show_all</span><span class="p">()</span>
+        <span class="n">win</span><span class="o">.</span><span class="n">hide</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Venta.on_bSair_clicked"><a class="viewcode-back" href="../documentacion.html#PDI_menuPrincipal.Venta.on_bSair_clicked">[documentos]</a>    <span class="k">def</span> <span class="nf">on_bSair_clicked</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">widget</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Función que se executa ao facer clic no botón &quot;Saír&quot;. Pecha a ventá do menú principal e finaliza o programa</span>
+
+<span class="sd">        :param widget: manexa o control de eventos ao facer clic no boton</span>
+<span class="sd">        :return:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">Gtk</span><span class="o">.</span><span class="n">main_quit</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Venta.on_destroy"><a class="viewcode-back" href="../documentacion.html#PDI_menuPrincipal.Venta.on_destroy">[documentos]</a>    <span class="k">def</span> <span class="nf">on_destroy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">widget</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="n">data</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Función que se executa cada vez que se pechen as ventás secundarias conectadas a este evento. Mostra o menú</span>
+<span class="sd">        principal</span>
+
+<span class="sd">        :param widget:</span>
+<span class="sd">        :param data:</span>
+<span class="sd">        :return:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">global</span> <span class="n">win</span>
+        <span class="n">win</span><span class="o">.</span><span class="n">show</span><span class="p">()</span></div></div>
+
+
+<div class="viewcode-block" id="main"><a class="viewcode-back" href="../documentacion.html#PDI_menuPrincipal.main">[documentos]</a><span class="k">def</span> <span class="nf">main</span><span class="p">(</span><span class="n">args</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Función que executará a ventá principal para iniciar o programa. Se emprega para iniciar o programa desde a consola.</span>
+
+<span class="sd">    :param args: parametro que ten que estar baleiro para poder usalo como metodo a executar no setup.py</span>
+<span class="sd">    :return:</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">global</span> <span class="n">win</span>
+    <span class="n">win</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s2">&quot;destroy&quot;</span><span class="p">,</span> <span class="n">Gtk</span><span class="o">.</span><span class="n">main_quit</span><span class="p">)</span>
+    <span class="n">win</span><span class="o">.</span><span class="n">show_all</span><span class="p">()</span>
+    <span class="n">Gtk</span><span class="o">.</span><span class="n">main</span><span class="p">()</span></div>
+
+
+<span class="n">win</span> <span class="o">=</span> <span class="n">Venta</span><span class="p">()</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">main</span><span class="p">()</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="index.html">Código de módulo</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Búsqueda rápida</h3>
+    <form class="search" action="../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Ir a" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2020, Alba Perez Cesar.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.7</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.8</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>
